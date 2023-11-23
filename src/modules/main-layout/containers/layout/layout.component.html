@@ -1,0 +1,34 @@
+<ng-container>
+<div class="wrapper default-theme">
+    <main class="content-main">
+      <button type="button"
+           class="btn btn-light sidebarCollapse"
+           id="sidebarCollapse"
+            (click)="toggleNavbar()"
+           [class.sidebarCollapseClose]="navbarOpen" >
+        <fa-icon icon="bars" class="icon"></fa-icon>
+    </button>
+      <div class="main-sidebar"   [class.toggleSidebar]="navbarOpen">
+        <app-side-nav></app-side-nav>
+      </div>
+      <section class="home-section" [class.homeSectionColse]="navbarOpen">
+        <div class="pages container-fluid">
+            <div class="header-nav">
+              <app-top-nav></app-top-nav>
+            </div>
+            <div class="content mt-5">
+                <ng-container *ngTemplateOutlet="defaultContent"></ng-container>
+            </div>
+            <div class="footer">
+              <hr>
+              <app-footer></app-footer>
+            </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</ng-container>
+<ng-template #defaultContent>
+    <ng-content></ng-content>
+</ng-template>
+

@@ -1,0 +1,16 @@
+.overflowScroll {
+    height: 64vh;
+    overflow: auto;
+}
+
+::-webkit-scrollbar {
+    width: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #eef0f9;
+}
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #b3b0b0;
+    }

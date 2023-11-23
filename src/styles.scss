@@ -1,0 +1,110 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* Importing Bootstrap SCSS file. */
+// * * * * * * * * * * * * *
+// * * Import Bootstrap  * *
+// * * * * * * * * * * * * *
+
+@import 'bootstrap/scss/bootstrap.scss';
+
+@import "~@ng-select/ng-select/themes/default.theme.css";
+@import './styles/styles.scss';
+
+body{
+    background-color: f9f9f9 !important;
+}
+
+.content{
+    // padding: 1rem;
+    // padding-left: 2rem;
+}
+
+.title h6 {
+    font-size: 2em;
+    font-weight: 300;
+    line-height: 1em;
+    color: #093360;
+}
+
+.iconSetting{
+    justify-content: space-between;
+    display: flex;
+    width: 20%;
+}
+
+.modal-header h4{
+    font-weight: 300;
+    line-height: 1em;
+    color: #093360;  
+}
+
+.footer{
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 6.3rem;
+    z-index: 1030;
+}
+
+.toast {
+    opacity: 1;
+}
+
+.home-section {
+	position: relative;
+	background: #f9f9f9;
+	min-height: 100vh;
+	top: 0;
+	left: 78px;
+	width: calc(100% - 78px);
+	transition: all 0.5s ease;
+	z-index: 2;
+	.text {
+		display: inline-block;
+		color: #11101d;
+		font-size: 25px;
+		font-weight: 500;
+		margin: 18px;
+	}
+}  
+/****toggel Close sidebar *****/
+.homeSectionColse{
+    left: 0;
+    width: 100%;
+}
+
+  .sidebarCollapse{
+	z-index: 1024;
+    position: fixed;
+    left: 8rem;
+	top: 0.5rem;
+	transition: all 0.3s ease;
+}
+
+.sidebarCollapseClose{
+	left: 1rem!important;
+	transition: all 0.3s ease;
+}
+
+.toggleSidebar{
+	width:0 ;
+	display: none !important;
+	transition: all 0.3s ease;
+}
+
+.icon-size {
+    background-color: #ffffff;
+    color: #109af2;
+    border-radius: 50%;
+    padding: 0.1rem 0.4rem;
+    font-size: 19px;
+    cursor: pointer;
+    width: 2rem;
+    height: 2rem;
+}
+
+.modal-header .close {
+    padding: unset !important; 
+    margin:  unset !important; 
+}
+

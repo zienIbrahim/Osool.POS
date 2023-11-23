@@ -1,0 +1,29 @@
+//@import 'styles/core/variables.scss';
+mat-card {
+     max-width: 400px;
+     margin: 2em auto;
+     text-align: center;
+     width: 100vh;
+}  
+    
+
+    
+    mat-form-field {
+     display: block;
+    }
+    .example-header-image {
+        background-image: url('../../../../assets/OssolLogo.png');
+        background-size: cover;
+        width: 135px;
+        height: 120px;
+        border-radius: 0%;
+        margin: auto;
+          }
+    :host {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .example-section {
+        margin: 12px 0;
+        text-align: start !important;
+      }
