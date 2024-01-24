@@ -13,27 +13,34 @@
 .btn-Qty{
     border: 1px solid #f2f3f8;
     background: #f2f3f8;
-     height: 2rem;
+    height: 1.5rem;
     line-height: 1;
+    font-size: 0.6rem;
+    
 }
 .input-Qty {
-    height: 2rem;
+        height: 1.5rem;
         border: none !important;
         background: #f2f3f8;
         margin-left: -1px;
+        width: 3rem;
+        outline: none;
 }
-// .box-card:hover 
-// {
-//     cursor: pointer !important;
-//     background: #dddddd3b !important;
-// }
+.box-card {
+    cursor: pointer !important;
+    background-color: #e8e5e5;
+}
+.box-card:hover 
+{
+    cursor: pointer !important;
+    background: #dddddd3b !important;
+}
 .content 
 {
     position: fixed;
     width: 100%;
     padding: 0rem 1rem !important;
 }
-
 .box-content 
 {
     width: 100%;
@@ -56,6 +63,11 @@ td
 {
     padding: 0 0.3rem;
     width: 15%;
+}
+th 
+{
+    font-size: 1em;
+   
 }
 th,
 td 
@@ -104,3 +116,49 @@ td
         padding: 0!important;
     }
 }
+.badge-qty {
+    top: -5px;
+  left: 135px;
+  position: absolute;
+  display: block;
+  z-index: 10;
+  padding: 0px 0px;
+  font-size: 12px;
+  background-color: #093360;
+  color: #fff;
+  border-radius: 4px;
+}
+.btn-category{
+     border: 1px solid #dee2e6;
+     border-radius: 5% !important;
+     margin: 3px;
+     outline: none;
+}
+.container-catigry{
+    height: 10rem;
+    overflow: scroll;
+    background-color: #f2f3f8;
+    border-bottom: 1px solid #bfbfbf;
+}
+.container-item{
+    height: 34rem;
+    overflow: scroll;
+    width: 100%;
+    display: flex;
+}
+
+::ng-deep .calculator{
+    .modal-content{
+        position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    pointer-events: auto;
+    background-clip: padding-box;
+    outline: 0;
+    background-color: unset;
+    border: unset;
+    border-radius: unset;
+    }
+     
+  }

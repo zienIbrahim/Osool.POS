@@ -1,3 +1,10 @@
 <nav class="navbar">
-
+    <ul>
+        <li>  
+            <a (click)="Fullscreen()" title="Full Screen"> 
+            <fa-icon size="2x" *ngIf="!isFullscreen" icon="expand"></fa-icon>
+            <fa-icon size="2x" *ngIf="isFullscreen" icon="compress"></fa-icon>
+        </a>
+    </li>
+    </ul>
 </nav>

@@ -12,12 +12,9 @@ mat-card {
      display: block;
     }
     .example-header-image {
-        background-image: url('../../../../assets/OssolLogo.png');
         background-size: cover;
-        width: 135px;
-        height: 120px;
+        width: 75px;
         border-radius: 0%;
-        margin: auto;
           }
     :host {
         flex-direction: column;

@@ -60,6 +60,8 @@ import { LayoutModule } from '@angular/cdk/layout';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { CalculatorComponent } from './components/calculator/calculator.component';
+import { EntrNumberComponent } from './components/entr-number/entr-number.component';
 
 @NgModule({
     imports: [
@@ -71,6 +73,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
         ...appCommonContainers.containers,
         ...appCommonComponents.components,
         ...appCommonDirectives.directives,
+        CalculatorComponent,
+        EntrNumberComponent,
     ],
     exports: [
         ...appCommonContainers.containers,

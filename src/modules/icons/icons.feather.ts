@@ -1,4 +1,4 @@
-/* All feather icons -> https://github.com/michaelbazos/angular-feather#available-icons */
+/*All feather icons -> https://github.com/michaelbazos/angular-feather#available-icons*/
 
 import {
     Activity,

@@ -14,14 +14,16 @@ export class AuthGuard implements CanActivate {
    constructor(private authService: AuthService, private router: Router) { }
 
    canActivate( next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-      if (this.authService.getIsLoggedIn().value ) {
-         if(this.authService.isTokenExpired()){
-            //tryRefreshingTokens 
-         }  
-         return true; 
+      console.log("this.authService.getIsLoggedIn().value",this.authService.getIsLoggedIn().value)
+    //   if( this.authService.getDecodedToken()){return false;}
+    if (this.authService.getIsLoggedIn().value) {
+      if(this.authService.isTokenExpired()){
+         //tryRefreshingTokens 
       }
-      this.router.navigate(['auth/login']);
-      return false;
+      return true;
+    }
+   this.router.navigate(['auth/login'], { queryParams: { returnUrl: state.url } });
+   return false;
    }
 
 }

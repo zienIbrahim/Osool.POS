@@ -33,6 +33,11 @@ import {
     faCheck,
     faBars,
     faShoppingBag,
+    faExpand,
+    faCompress,
+    faClipboard,
+    faCalculator,
+    faCashRegister,
     faTags
   } from '@fortawesome/free-solid-svg-icons';
   
@@ -69,5 +74,10 @@ export const fontAwesomeSolidIcons = {
     faCheck,
     faBars,
     faShoppingBag,
+    faExpand,
+    faCompress,
+    faClipboard,
+    faCalculator,
+    faCashRegister,
     faTags
 };

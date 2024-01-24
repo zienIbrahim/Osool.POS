@@ -1,3 +1,4 @@
+import { LocallyStoredItemsKeys } from "./LocallyStoredItemsKeys";
 
 export default class AppUtils {
 
@@ -58,6 +59,15 @@ export default class AppUtils {
          return v.toString(16);
        });
     }
+    public static RefreshMasterData() {
+      const keys = Object.keys(LocallyStoredItemsKeys)
+      keys.forEach((key, _index) => {
+         
+      })
+   }
+   public static RefreshDataByKey(key: string) {
+      localStorage.removeItem(key)
+   }
  
  }
  

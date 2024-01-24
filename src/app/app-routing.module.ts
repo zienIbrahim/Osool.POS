@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from 'src/helpers/guards/auth.guard';
 const routes: Routes = [
   {
     path: '',
@@ -12,7 +13,7 @@ const routes: Routes = [
       import('../modules/auth/auth-routing.module').then((m) => m.AuthRoutingModule),
 }, {
   path: 'POS',
-  canActivate: [],
+  canActivate: [AuthGuard],
   loadChildren: () =>
       import('../modules/point-of-sale/point-of-sale-routing.module').then(
           (m) => m.PointOfSaleRoutingModule

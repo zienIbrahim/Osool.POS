@@ -9,6 +9,7 @@ import { AppCommonModule } from 'src/modules/app-common/app-common.module';
 import { Error401Interceptor } from 'src/helpers/interceptors/Error401Interceptor';
 import { ErrorInterceptor } from 'src/helpers/interceptors/ErrorInterceptor';
 import { HttpClient, HttpClientModule } from '@angular/common/http';  
+import {AuthGuard } from 'src/helpers/guards/auth.guard';  
 
 @NgModule({
   declarations: [AppComponent],
@@ -19,7 +20,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
     BrowserAnimationsModule,
     AppCommonModule.forRoot()
   ],
-  providers: [
+  providers: [AuthGuard,
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: Error401Interceptor, multi: true },

@@ -34,15 +34,6 @@ export class ErrorInterceptor implements HttpInterceptor {
         return handler.handle(request).pipe(tap(null, this.handleErrors.bind(this)));
     }
     handleErrors(error: HttpErrorResponse) {
-        console.log('parse Error ',error);
-        console.log('parse error.status ',error.status);
-
-        const defaultOptions = {
-            autohide: true,
-            delay: 5000,
-            headerClasses: 'bg-danger text-white',
-        };
-        
         switch(error.status) {
             case 0:
                 this.router.navigate(['/error/500']);
@@ -62,7 +53,6 @@ export class ErrorInterceptor implements HttpInterceptor {
          default:
                 break;
         }
-
         return throwError(error);
     }
 }

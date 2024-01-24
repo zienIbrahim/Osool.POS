@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { ColorSchemeService } from 'src/modules/app-common/services/color-scheme.service';
 import { AuthService } from 'src/modules/auth/services/auth.service';
 
@@ -12,8 +12,9 @@ export class TopNavComponent {
 
   }
   isDark:boolean=true;
+  isFullscreen:boolean=true;
   navbarOpen = false;
-
+  @ViewChild('fullScreen') divRef:any;
   public themes = [
     {
         name: 'dark',
@@ -35,4 +36,21 @@ logout()
 {
   this.authService.logout();
 }
+Fullscreen() {
+    const elem = document.documentElement;
+    console.log("Fullscreen :",this.isFullscreen)
+    if (!this.isFullscreen) {
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      }
+      this.isFullscreen=true;
+    } 
+    else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+      this.isFullscreen = false;
+
+    }
+  }
 }

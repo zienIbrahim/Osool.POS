@@ -1,52 +1,46 @@
 <div class="content">
     <div class="row">
         <div class="col-lg-7 col-md-12 col-sm-12 ">
+            <div style="display: flex; justify-content: flex-end;">
+                <button (click) = "openCalculator(calculator)" class="btn-category btn  btn-outline-primary">
+                 <fa-icon size="2x" icon="calculator"></fa-icon>
+                </button>
+                <button class="btn-category btn  btn-outline-primary">
+                    <fa-icon size="2x" icon="cash-register"></fa-icon>
+                </button>
+                <button class="btn-category btn  btn-outline-primary">
+                    <fa-icon size="2x" icon="clipboard"></fa-icon>
+                </button>
+                <button class="btn-category btn  btn-outline-primary">
+                    <fa-icon size="2x" icon="trash"></fa-icon>
+                </button>
+            </div>
             <div class="box-content content-table">
-                <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
-                    <li [ngbNavItem]="0">
-                        <a ngbNavLink>
-                            <fa-icon icon="tags"></fa-icon>
-                            All
+                <ul ngbNav #nav="ngbNav" [(activeId)]="activeCategory" class="nav-tabs" class="container-catigry">
+                    <li *ngFor="let category of POSCategoryButtons let i = index;" [ngbNavItem]="i+1" >
+                        <a ngbNavLink class="btn-category btn  btn-outline-primary">
+                            {{category.classifNameA}}
                         </a>
-                        <ng-template ngbNavContent>
-                            <div class="row d-flex box-content-item">
-                                <div class="col-lg-3  mr-4" *ngFor="let item of AllItemData let i = index;">
-                                    <div class="card box-card" (click)="addToCart(item)">
-                                      <img src="{{item.Image}}" class="mb-1" width="100" height="90" alt="">
-                                     <div class="card-footer d-flex justify-content-between">
-                                        {{item.itemName}}
-                                        <h6>
-                                          ${{ item.priceItem | number : '1.2-2'}}
-                                        </h6>
-                                     </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </ng-template>
-                    </li>
-                    <li *ngFor="let Data of ItemOfgroupData let i = index;" [ngbNavItem]="i+1">
-                        <a ngbNavLink>
-                            <fa-icon icon="tags"></fa-icon>
-                            {{Data.nameGroup}}
-                        </a>
-                        <ng-template ngbNavContent>
-                            <div class="row d-flex">
-                                <div class="col-lg-3  mr-4" *ngFor="let item of Data?.items">
-                                    <div class="box-card card" (click)="addToCart(item)">
-                                        <img src="{{item.Image}}" class="mb-1" width="100" height="90" alt="">
-                                        <div class="card-footer d-flex justify-content-between">
-                                           {{item.itemName}}
-                                            <h6>
-                                                ${{ item.priceItem | number : '1.2-2'}}
-                                            </h6>
+                        <ng-template ngbNavContent >
+                            <div class="row  mx-2 container-item">
+                                    <div class="item m-2" id="item" *ngFor="let item of getItemByCategoryId(category.classificationID)">
+                                        <div class="image_container" id="image-container">
+                                            <div class="price-label-container">
+                                                <div id="price-label" class="price-label">{{ item.classUnitPrice | number : '1.2-2'}}</div>
+                                            </div>
+                                            <img class="car-image" *ngIf="item.classImage" [src]="item.classImage" id="car-image"> 
+                                        </div>
+                                        <div class="item_info_outer">
+                                            <div class="item_info" id="item_info">
+                                                <div class="name" id="name-brand">{{item.classNameA}} - {{item.unitName}}</div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
                             </div>
-
                         </ng-template>
                     </li>
                 </ul>
+                <div [ngbNavOutlet]="nav" class="mt-2"></div> 
             </div>
         </div>
         <div class="col-lg-4 col-md-12 col-sm-12 ">
@@ -61,12 +55,23 @@
                                 <th  scope="col">Item</th>
                                 <th  scope="col">Qty</th>
                                 <th scope="col">Price</th>
-                                <th  scope="col">Sub Total</th>
-                                <th  scope="col">Delete</th>
+                                <th  scope="col"></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let cart of cartlist let i = index;">
+                            <tr  scope="row">
+                                <td>Item 1</td>
+                                <td class="text-center">
+                                    <div class="m-btn-group m-btn-group--pill btn-group mr-2 mt-2" role="group" aria-label="...">
+                                        <button type="button" class="m-btn btn btn-default btn-Qty"> <fa-icon icon="minus" class="icon"></fa-icon></button>
+                                        <input type="number" class="input-Qty" [value]="1854" (focus)="openCalculator(entrNumber)">
+                                        <button type="button" class="m-btn btn btn-default btn-Qty"><fa-icon icon="plus" class="icon"></fa-icon></button>
+                                    </div>
+                                </td>
+                                <td>15</td>
+                                <td><fa-icon style="color: red;" icon="trash" class="icon"></fa-icon></td>
+                            </tr>                            
+                            <!-- <tr *ngFor="let cart of cartlist let i = index;">
                                 <td scope="row">
                                     <div style="display: flow-root;">
                                         <img src="{{cart.Image}}" class="img-thumbnail" alt="" style=" height: 4vh; margin-left: 0.5rem ;">
@@ -102,7 +107,7 @@
                                         <fa-icon icon="trash"></fa-icon>
                                     </button>
                                 </td>
-                            </tr>
+                            </tr> -->
                         </tbody>
                     </table>
                 </div>
@@ -113,52 +118,52 @@
                     <tr>
                         <th class="w-25">Total:</th>
                         <td class="pr-2 w-100px">
-                            <h5> <span>$</span> {{Total | number : '1.2-2'}}</h5>
+                            <!-- <h5> <span>$</span> {{Total | number : '1.2-2'}}</h5> -->
                         </td>
                     </tr>
                     <tr>
                         <th class="w-25">Total:</th>
                         <td class="pr-2 w-100px">
-                            <h5> <span>$</span> {{Total | number : '1.2-2'}}</h5>
+                            <!-- <h5> <span>$</span> {{Total | number : '1.2-2'}}</h5> -->
                         </td>
                     </tr>
                     <tr>
                         <th class="w-25">Total:</th>
                         <td class="pr-2 w-100px">
-                            <h5> <span>$</span> {{Total | number : '1.2-2'}}</h5>
+                            <!-- <h5> <span>$</span> {{Total | number : '1.2-2'}}</h5> -->
                         </td>
                     </tr>
                     <tr>
                         <th class="w-25">Total:</th>
                         <td class="pr-2 w-100px">
-                            <h5> <span>$</span> {{Total | number : '1.2-2'}}</h5>
+                            <!-- <h5> <span>$</span> {{Total | number : '1.2-2'}}</h5> -->
                         </td>
                     </tr>
                 </table>
                 <div class="d-flex">
-                    <button type="button" class="btn btn-outline-danger w-100 m-1" (click)="ResetToCart()">
+                    <button type="button" class="btn btn-outline-danger w-100 m-1" >
                         Cancel
                         <fa-icon icon="times"></fa-icon>
                     </button>
-                    <button type="button" class="btn btn-outline-primary w-100 m-1" (click)="AddIOrder()">
+                    <button (click) = "openCalculator(calculator)" type="button" class="btn btn-outline-primary w-100 m-1">
                         Purchase
                         <fa-icon icon="shopping-bag"></fa-icon>
                     </button>
-                    <button type="button" class="btn btn-outline-primary w-100 m-1" (click)="AddIOrder()">
+                    <button (click) = "openUsre(contentvoucher)" type="button" class="btn btn-outline-primary w-100 m-1">
                         Purchase
                         <fa-icon icon="shopping-bag"></fa-icon>
                     </button>
                 </div>
                 <div class="d-flex">
-                    <button type="button" class="btn btn-outline-primary w-100 m-1" (click)="AddIOrder()">
+                    <button type="button" class="btn btn-outline-primary w-100 m-1">
                         Purchase
                         <fa-icon icon="shopping-bag"></fa-icon>
                     </button>
-                    <button type="button" class="btn btn-outline-primary w-100 m-1" (click)="AddIOrder()">
+                    <button type="button" class="btn btn-outline-primary w-100 m-1">
                         Purchase
                         <fa-icon icon="shopping-bag"></fa-icon>
                     </button>
-                    <button type="button" class="btn btn-outline-primary w-100 m-1" (click)="AddIOrder()">
+                    <button type="button" class="btn btn-outline-primary w-100 m-1">
                         Purchase
                         <fa-icon icon="shopping-bag"></fa-icon>
                     </button>
@@ -167,8 +172,16 @@
         </div>
     </div>
 </div>
-
-<ng-template #contentvoucher let-c="close" let-d="dismiss">
+<div class="calculator">
+    <ng-template #calculator let-calculator modalDialogClass="calculator">
+        <app-calculator></app-calculator>
+</ng-template>
+<div class="calculator">
+    <ng-template #entrNumber let-entrNumber modalDialogClass="calculator">
+        <app-entr-number></app-entr-number>
+</ng-template>
+</div>
+<ng-template #contentvoucher  let-d="dismiss" modalDialogClass="customModal">
     <div class="modal-header">
         <h4 class="modal-title m-auto" id="modal-basic-title">Sales Details</h4>
         <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
@@ -197,22 +210,22 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let data of voucherSales let i = index;">
+                <!-- <tr *ngFor="let data of voucherSales let i = index;">
                     <td>{{data.item_lines_order.itemName}}</td>
                     <td>{{data.unitPrice | number : '1.2-2'}}</td>
                     <td>{{data.quantity}}</td>
                     <td>{{data.subTotal | number : '1.2-2'}}</td>
-                </tr>
+                </tr> -->
             </tbody>
         </table>
         <table class="table-footer">
             <tr>
                 <th>Total : </th>
-                <td>${{invoiceTotle | number : '1.2-2'}}</td>
+                <!-- <td>${{invoiceTotle | number : '1.2-2'}}</td> -->
             </tr>
             <tr>
                 <th>Employee : </th>
-                <td>Omer Ali</td>
+                <!-- <td>Omer Ali</td> -->
             </tr>
         </table>
         <!-- <div class="d-flex justify-content-end">

@@ -19,6 +19,7 @@ import * as authGuards from './guards';
 
 /* Services */
 import * as authServices from './services';
+import { LayoutAuthComponent } from './layout/layout-auth/layout-auth.component';
 
 @NgModule({
     imports: [
@@ -30,7 +31,7 @@ import * as authServices from './services';
         MainLayoutModule,
     ],
     providers: [...authServices.services, ...authGuards.guards],
-    declarations: [...authContainers.containers, ...authComponents.components],
+    declarations: [...authContainers.containers, ...authComponents.components, LayoutAuthComponent],
     exports: [...authContainers.containers, ...authComponents.components],
 })
 export class AuthModule {}

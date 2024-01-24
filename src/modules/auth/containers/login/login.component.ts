@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Login } from '../../data/login';
 import { AuthService } from '../../services';
@@ -30,7 +30,7 @@ export class LoginComponent implements OnInit {
   }
   initForm() {
     this.loginForm = this.fb.group({
-      email: ['', Validators.email],
+      email: ['',Validators.compose([Validators.email, Validators.required]) ],
       password: ['', Validators.required],
       rememberMe: [false],
     });
@@ -44,50 +44,73 @@ export class LoginComponent implements OnInit {
       this.formSubmitAttempt = false;
       this.loginInvalid = true;
       this.isLoading = false;
+      for (const key in this.loginForm.controls) {
+        const control = this.loginForm.controls[key];
+        control.markAllAsTouched();
     }
+    }
+
     const loginData: Login = {
       username: this.loginForm.value.email,
       password: this.loginForm.value.password,
       rememberMe: this.loginForm.value.rememberMe,
-      returnUrl:"/Tenant/List"
+      returnUrl:"/POS/new"
     };
-    this.authService.Login(loginData).subscribe((res:any)=>{
-      console.log("value --> res",res)
-      this.formSubmitAttempt = false;
-      this.loginInvalid = false;
-      this.isLoading = false;  
-      this.cdRef.detectChanges()
-  
-    },
-    (error:any)=>{
-      console.log("value --> error",error)
-      this.formSubmitAttempt = false;
-      this.loginInvalid = true;
-      this.isLoading = false; 
-      this.cdRef.detectChanges()
-   
-    },
-    ()=>{
 
+    this.authService.Login(loginData).subscribe({
+      next: (value) => {
+        this.formSubmitAttempt = false;
+        this.loginInvalid = false;
+        this.isLoading = false;
+        this.cdRef.detectChanges()
+      },
+      error: (value) => {
+        this.formSubmitAttempt = false;
+        this.loginInvalid = true;
+        this.isLoading = false;
+        this.cdRef.detectChanges()
+      },
+      complete: () => {
+        console.log("value --> complete!!")
+      },
     }
     );
-    // {
-    //   next: (value) => {
-    //     console.log("value --> next",value)
-    //     this.formSubmitAttempt = true;
-    //     this.loginInvalid = false;
-    //     this.isLoading = false;
-
-    //   },
-    //   error: (value) => {
-    //     this.loginInvalid = true;
-    //   },
-    //   complete: () => {        console.log("value --> complete!!")
-    // },
-    // }
-
   }
   public logout(): void {
     // todo
+    this.authService.logout()
+  }
+  
+    /* Accessor Methods */
+
+    get emailControl() {
+      return this.loginForm.get('email') as FormControl;
+  }
+
+  get emailControlValid() {
+      return this.emailControl.touched && !this.emailControlInvalid;
+  }
+
+  get emailControlInvalid() {
+      return (
+          this.emailControl.touched &&
+          (this.emailControl.hasError('required') || this.emailControl.hasError('email'))
+      );
+  }
+
+  get passwordControl() {
+      return this.loginForm.get('password') as FormControl;
+  }
+
+  get passwordControlValid() {
+      return this.passwordControl.touched && !this.passwordControlInvalid;
+  }
+
+  get passwordControlInvalid() {
+      return (
+          this.passwordControl.touched &&
+          (this.passwordControl.hasError('required') ||
+              this.passwordControl.hasError('minlength'))
+      );
   }
 }
