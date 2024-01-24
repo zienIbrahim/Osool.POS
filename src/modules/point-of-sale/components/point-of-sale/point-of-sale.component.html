@@ -18,6 +18,7 @@
             <div class="box-content content-table">
                 <ul ngbNav #nav="ngbNav" [(activeId)]="activeCategory" class="nav-tabs" class="container-catigry">
                     <li *ngFor="let category of POSCategoryButtons let i = index;" [ngbNavItem]="i+1" >
+                        
                         <a ngbNavLink class="btn-category btn  btn-outline-primary">
                             {{category.classifNameA}}
                         </a>
@@ -46,7 +47,17 @@
         <div class="col-lg-4 col-md-12 col-sm-12 ">
             <div class="card pt-0" style="width: 100%;height: 59vh;overflow: auto;">
                 <div class="row">
-               
+                    <div class="col-12 pt-0">
+                        <div class="input-group">
+                            <input class="form-control py-2 border-right-0 border" type="search" value="search" id="searchInput" name="searchInput">
+                            <span class="input-group-append">
+                                <div class="input-group-text bg-transparent">
+                                    <fa-icon size="1x" icon="search"></fa-icon>
+
+                                </div>
+                            </span>
+                        </div>
+                    </div>
                 </div>
                 <div  class="table-responsive">
                     <table class="table">
@@ -64,7 +75,7 @@
                                 <td class="text-center">
                                     <div class="m-btn-group m-btn-group--pill btn-group mr-2 mt-2" role="group" aria-label="...">
                                         <button type="button" class="m-btn btn btn-default btn-Qty"> <fa-icon icon="minus" class="icon"></fa-icon></button>
-                                        <input type="number" class="input-Qty" [value]="1854" (focus)="openCalculator(entrNumber)">
+                                        <input type="number" class="input-Qty" [value]="1854" (click)="openCalculator(entrNumber)">
                                         <button type="button" class="m-btn btn btn-default btn-Qty"><fa-icon icon="plus" class="icon"></fa-icon></button>
                                     </div>
                                 </td>
@@ -178,7 +189,7 @@
 </ng-template>
 <div class="calculator">
     <ng-template #entrNumber let-entrNumber modalDialogClass="calculator">
-        <app-entr-number></app-entr-number>
+        <app-entr-number (Resulte)="Resulte($event)"></app-entr-number>
 </ng-template>
 </div>
 <ng-template #contentvoucher  let-d="dismiss" modalDialogClass="customModal">

@@ -38,6 +38,7 @@ import {
     faClipboard,
     faCalculator,
     faCashRegister,
+    faArrowLeft,
     faTags
   } from '@fortawesome/free-solid-svg-icons';
   
@@ -79,5 +80,6 @@ export const fontAwesomeSolidIcons = {
     faClipboard,
     faCalculator,
     faCashRegister,
+    faArrowLeft,
     faTags
 };

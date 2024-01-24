@@ -10,8 +10,8 @@
     font-size: 5rem;
     height: 80px;
     border: none;
-    background-color: rgba(255,255,255,.4);
-    color: rgba(255,255,255,.05);
+    background-color: #fff;
+    color:#2e86c0;
     text-align: right;
     padding-right: 20px;
     padding-left: 10px;
@@ -62,7 +62,7 @@
   
   .calculator-keys {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     grid-gap: 20px;
     padding: 20px;
   }
