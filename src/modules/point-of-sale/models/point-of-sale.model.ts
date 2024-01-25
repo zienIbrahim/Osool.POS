@@ -51,4 +51,59 @@ export interface POSCategoryButtons {
     classifNameE: string
 
 }
-
+export interface Address   {
+	countryCode: string;
+	cityName:string ;
+	provinceState:string;
+	citySubdivisionName:string;
+	street:string;
+	additionalStreet:string;
+	buildingNumber:string;
+	postalCode:string;
+	additionalNumber:string; 
+ }
+ export interface UserData {
+    userID: Number;
+    userName: string;
+    password: string;
+    defaultBranchID: Number;
+    defaultCasherID: Number;
+    defaultStorID: Number;
+    userType: Number;
+    statues: boolean;
+    userDataOnly: boolean;
+    saleLessCost: boolean;
+    langID: Number;
+    defaultCenterCost: Number;
+    showAllBranch: boolean;
+    showAllCC: boolean;
+    showAllStor: boolean;
+    ivcePriceEdit: boolean;
+    changeDate: boolean;
+    doDiscount: boolean;
+    defaultBank: Number;
+    showClassCost: boolean;
+    showInvceCost: boolean;
+    saleLessThanInvceCost: boolean;
+    saleLessThanLastPrice: boolean;
+    saleLessThanInvceLastPrice: boolean;
+    saleOverCreditLimit: boolean;
+    makeBackupRestore: boolean;
+    showInvceLastPrice: boolean;
+    showItemLastPrice: boolean;
+    companyID: Number;
+    showAllCompany: boolean;
+    userPrevilige: userPrevilige[];
+}
+export interface userPrevilige {
+    numberID: Number;
+    formName: string;
+    showForm: boolean;
+    addNew: boolean;
+    save: boolean;
+    edit: boolean;
+    search: boolean;
+    print: boolean;
+    deleteRow: boolean;
+    userID: Number;
+}

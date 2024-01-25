@@ -24,7 +24,10 @@
                         </a>
                         <ng-template ngbNavContent >
                             <div class="row  mx-2 container-item">
-                                    <div class="item m-2" id="item" *ngFor="let item of getItemByCategoryId(category.classificationID)">
+                                    <div class="item m-2" id="item"
+                                     *ngFor="let item of getItemByCategoryId(category.classificationID)"
+                                     (click)="AddItem(item)"
+                                     >
                                         <div class="image_container" id="image-container">
                                             <div class="price-label-container">
                                                 <div id="price-label" class="price-label">{{ item.classUnitPrice | number : '1.2-2'}}</div>
@@ -59,70 +62,36 @@
                         </div>
                     </div>
                 </div>
-                <div  class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th  scope="col">Item</th>
-                                <th  scope="col">Qty</th>
-                                <th scope="col">Price</th>
-                                <th  scope="col"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr  scope="row">
-                                <td>Item 1</td>
+                <form [formGroup]="POSInvoiceForm">
+                    <div  class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th  scope="col">Item</th>
+                                    <th  scope="col">Qty</th>
+                                    <th scope="col">Price</th>
+                                    <th  scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody formArrayName="invoiceItem">
+                                <tr *ngFor="let item of invoiceItemList.controls  let i = index;"
+                                [formGroupName]="i" (click)="onRowSelected(i)">
+                                <td>{{item.get("ClassName")?.value}}</td>
                                 <td class="text-center">
                                     <div class="m-btn-group m-btn-group--pill btn-group mr-2 mt-2" role="group" aria-label="...">
                                         <button type="button" class="m-btn btn btn-default btn-Qty"> <fa-icon icon="minus" class="icon"></fa-icon></button>
-                                        <input type="number" class="input-Qty" [value]="1854" (click)="openCalculator(entrNumber)">
+                                        <input  formControlName="Qty"type="number" class="input-Qty"  (click)="openNumberEntring(entrNumber ,i,'Qty')">
                                         <button type="button" class="m-btn btn btn-default btn-Qty"><fa-icon icon="plus" class="icon"></fa-icon></button>
-                                    </div>
+                                </div>
                                 </td>
-                                <td>15</td>
+                                <td><input  formControlName="ShowPrice" type="number" class="input-Qty" (click)="openNumberEntring(entrNumber ,i,'ShowPrice')"></td>
                                 <td><fa-icon style="color: red;" icon="trash" class="icon"></fa-icon></td>
-                            </tr>                            
-                            <!-- <tr *ngFor="let cart of cartlist let i = index;">
-                                <td scope="row">
-                                    <div style="display: flow-root;">
-                                        <img src="{{cart.Image}}" class="img-thumbnail" alt="" style=" height: 4vh; margin-left: 0.5rem ;">
-                                        <input type="text" class="form-control form-control-sm" [(value)]="cart.itemName"
-                                            name="itemName" disabled />
-                                    </div>
-                                    <input type="text" class="form-control form-control-sm" [(value)]="cart.itemNo"
-                                        name="itemNo" hidden />
-                                </td>
-                                <td scope="row">
-                                    <div class="btn-group" role="group" aria-label="Basic example">
-                                        <button type="button" class="btn btn-default btn-Qty" (click)="changeQntymin(cart)">
-                                            <fa-icon icon="minus"></fa-icon>
-                                        </button>
-                                        <input #qnt type="number" class="form-control input-Qty " id="" min="0" [value]="cart.quantity"
-                                            name="quantity" (change)="changeQnty(cart,qnt.value)">
-                                        <button type="button" class="btn btn-default btn-Qty"
-                                            (click)="changeQntyPlus(cart)">
-                                            <fa-icon icon="plus"></fa-icon>
-                                        </button>
-                                    </div>
-                                </td>
-                                <td scope="row"> 
-                                    <input type="number" class="form-control" id="unitPrice" [(value)]="cart.unitPrice"
-                                        name="unitPrice" disabled>
-                                    </td>
-                                <td scope="row"> 
-                                    <input type="number" class="form-control" id="subTotal" [(value)]="cart.subTotal"
-                                        name="subTotal" disabled>
-                                </td>
-                                <td scope="row">
-                                    <button type="button" class="btn btn-outline-danger" (click)="removeToCart(cart)">
-                                        <fa-icon icon="trash"></fa-icon>
-                                    </button>
-                                </td>
-                            </tr> -->
-                        </tbody>
-                    </table>
-                </div>
-    
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
+                
             </div>
             <div class="card" style="width: 100%; height: 27vh;">
                 <table>
