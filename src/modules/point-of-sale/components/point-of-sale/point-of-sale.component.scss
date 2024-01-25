@@ -25,6 +25,7 @@
         margin-left: -1px;
         width: 3rem;
         outline: none;
+        border-radius: 0.25rem
 }
 .box-card {
     cursor: pointer !important;
@@ -62,7 +63,7 @@
 td 
 {
     padding: 0 0.3rem;
-    width: 15%;
+    // width: 15%;
 }
 th 
 {
