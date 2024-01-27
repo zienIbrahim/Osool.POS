@@ -8,11 +8,14 @@
                 <button class="btn-category btn  btn-outline-primary">
                     <fa-icon size="2x" icon="cash-register"></fa-icon>
                 </button>
-                <button class="btn-category btn  btn-outline-primary">
+                <button class="btn-category btn  btn-outline-primary" (click)="openItemNote(ItemNote)">
                     <fa-icon size="2x" icon="clipboard"></fa-icon>
                 </button>
-                <button class="btn-category btn  btn-outline-primary">
+                <button class="btn-category btn  btn-outline-primary" (click)="RemoveInvoiceItem()">
                     <fa-icon size="2x" icon="trash"></fa-icon>
+                </button>
+                <button class="btn-category btn  btn-outline-primary" (click)="openNumberEntring(entrNumber ,'ShowPrice')">
+                    <fa-icon size="2x" icon="dollar-sign"></fa-icon>
                 </button>
             </div>
             <div class="box-content content-table">
@@ -52,7 +55,10 @@
                 <div class="row">
                     <div class="col-12 pt-0">
                         <div class="input-group">
-                            <input class="form-control py-2 border-right-0 border" type="search" value="search" id="searchInput" name="searchInput">
+                            <input class="form-control py-2 border-right-0 border"  type="search"
+                            [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="barCodeData"
+                            (keyup.enter)="barcodeSearchEvent()">
                             <span class="input-group-append">
                                 <div class="input-group-text bg-transparent">
                                     <fa-icon size="1x" icon="search"></fa-icon>
@@ -75,17 +81,15 @@
                             </thead>
                             <tbody formArrayName="invoiceItem">
                                 <tr *ngFor="let item of invoiceItemList.controls  let i = index;"
-                                [formGroupName]="i" (click)="onRowSelected(i)">
+                                [formGroupName]="i" (click)="onRowSelected(i)" [ngClass]="{'SelectedRow': SelectedRow==i}">
                                 <td>{{item.get("ClassName")?.value}}</td>
-                                <td class="text-center">
-                                    <div class="m-btn-group m-btn-group--pill btn-group mr-2 mt-2" role="group" aria-label="...">
-                                        <button type="button" class="m-btn btn btn-default btn-Qty"> <fa-icon icon="minus" class="icon"></fa-icon></button>
-                                        <input  formControlName="Qty"type="number" class="input-Qty"  (click)="openNumberEntring(entrNumber ,i,'Qty')">
-                                        <button type="button" class="m-btn btn btn-default btn-Qty"><fa-icon icon="plus" class="icon"></fa-icon></button>
-                                </div>
+                                <td class="text-center" (click)="openNumberEntring(entrNumber ,'Qty',i)">
+                                    {{item.get("Qty")?.value}}
                                 </td>
-                                <td><input  formControlName="ShowPrice" type="number" class="input-Qty mt-2" (click)="openNumberEntring(entrNumber ,i,'ShowPrice')"></td>
-                                <td><fa-icon style="color: red;" icon="trash" class="icon"></fa-icon></td>
+                                <td (click)="openNumberEntring(entrNumber ,'ShowPrice',i)"> 
+                                    {{item.get("ShowPrice")?.value}}
+                                </td>
+                                <td><fa-icon (click)="RemoveInvoiceItem(i)" style="color: red;" icon="trash" class="icon"></fa-icon></td>
                             </tr>
                             </tbody>
                         </table>
@@ -94,6 +98,20 @@
                 
             </div>
             <div class="card" style="width: 100%; height: 27vh;">
+                <div class="d-flex">
+                    <button type="button" class="btn btn-outline-danger" >
+                        Cancel
+                        <fa-icon icon="times"></fa-icon>
+                    </button>
+                    <button type="button" class="btn btn-outline-primary">
+                        Purchase
+                        <fa-icon icon="shopping-bag"></fa-icon>
+                    </button>
+                    <button type="button" class="btn btn-outline-primary">
+                        Purchase
+                        <fa-icon icon="shopping-bag"></fa-icon>
+                    </button>
+                </div>
                 <table>
                     <tr>
                         <th class="w-25">Total:</th>
@@ -120,34 +138,6 @@
                         </td>
                     </tr>
                 </table>
-                <div class="d-flex">
-                    <button type="button" class="btn btn-outline-danger w-100 m-1" >
-                        Cancel
-                        <fa-icon icon="times"></fa-icon>
-                    </button>
-                    <button (click) = "openCalculator(calculator)" type="button" class="btn btn-outline-primary w-100 m-1">
-                        Purchase
-                        <fa-icon icon="shopping-bag"></fa-icon>
-                    </button>
-                    <button (click) = "openUsre(contentvoucher)" type="button" class="btn btn-outline-primary w-100 m-1">
-                        Purchase
-                        <fa-icon icon="shopping-bag"></fa-icon>
-                    </button>
-                </div>
-                <div class="d-flex">
-                    <button type="button" class="btn btn-outline-primary w-100 m-1">
-                        Purchase
-                        <fa-icon icon="shopping-bag"></fa-icon>
-                    </button>
-                    <button type="button" class="btn btn-outline-primary w-100 m-1">
-                        Purchase
-                        <fa-icon icon="shopping-bag"></fa-icon>
-                    </button>
-                    <button type="button" class="btn btn-outline-primary w-100 m-1">
-                        Purchase
-                        <fa-icon icon="shopping-bag"></fa-icon>
-                    </button>
-                </div>
             </div>
         </div>
     </div>
@@ -155,6 +145,33 @@
 <div class="calculator">
     <ng-template #calculator let-calculator modalDialogClass="calculator">
         <app-calculator></app-calculator>
+</ng-template>
+<div class="calculator">
+    <ng-template #ItemNote let-ItemNote modalDialogClass="calculator">
+        <div class="card" (keyup.enter)="AddNoteToItem(note.value)">
+            <div class="card-header">
+               <h4>ملاحظات علي الصنف</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12">
+                         <input #note type="text" class="form-control" [value]="invoiceItemList.controls[this.SelectedRow].get('ItemNote')?.value">                    
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-12">
+                        <button class="btn-category btn  btn-outline-primary"
+                        (click)="AddNoteToItem(note.value)">
+                            <fa-icon size="1x" icon="check"></fa-icon>
+                        </button>
+                        <button class="btn-category btn  btn-outline-primary"
+                         type="button" (click) = "closeModal()" > 
+                            <fa-icon size="1x" icon="times"></fa-icon>
+                         </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 </ng-template>
 <div class="calculator">
     <ng-template #entrNumber let-entrNumber modalDialogClass="calculator">

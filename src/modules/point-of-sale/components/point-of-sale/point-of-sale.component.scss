@@ -1,4 +1,4 @@
-.card 
+.content .card 
 {
     width: 17rem;
     height: 20vh;
@@ -147,6 +147,16 @@ td
     width: 100%;
     display: flex;
 }
+.SelectedRow{
+    background-color: #093360;
+    color: #fff;
+    td:first-child { border-top-left-radius: 10px; }
+    td:last-child { border-top-right-radius: 10px; }
+   td:first-child { border-bottom-left-radius: 10px; }
+   td:last-child { border-bottom-right-radius: 10px; }
+   
+}
+  
 
 ::ng-deep .calculator{
     .modal-content{

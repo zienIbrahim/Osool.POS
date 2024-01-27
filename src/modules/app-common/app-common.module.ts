@@ -21,6 +21,7 @@ const modules = [IconsModule,
     DialogModule,
     FlexLayoutModule,
     NgbModule,
+    FormsModule ,
     FontAwesomeModule,
     LayoutModule
 
@@ -62,6 +63,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CalculatorComponent } from './components/calculator/calculator.component';
 import { EntrNumberComponent } from './components/entr-number/entr-number.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
     imports: [

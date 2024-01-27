@@ -39,6 +39,7 @@ import {
     faCalculator,
     faCashRegister,
     faArrowLeft,
+    faDollarSign,
     faTags
   } from '@fortawesome/free-solid-svg-icons';
   
@@ -81,5 +82,6 @@ export const fontAwesomeSolidIcons = {
     faCalculator,
     faCashRegister,
     faArrowLeft,
+    faDollarSign,
     faTags
 };

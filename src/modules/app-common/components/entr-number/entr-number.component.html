@@ -1,6 +1,6 @@
 
-<div class="calculator">
-    <input type="text" class="calculator-screen" [value]="currentNumber" disabled />
+<div class="calculator"  (keyup.enter)="don()">
+    <input type="text"  (input)="onInputChange($event)"  class="calculator-screen" [(ngModel)]="currentNumber"  />
     <div class="calculator-keys">
         <button type="button" (click) = "getNumber('7')" value="7">7</button>
         <button type="button" (click) = "getNumber('8')" value="8">8</button>

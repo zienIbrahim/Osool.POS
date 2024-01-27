@@ -17,14 +17,16 @@ export class PointOfSaleComponent {
   myDate : any;
   setting : Setting=<Setting>{};
   CompanyInfo: CompanyInfo = <CompanyInfo>{};
-  activeCategory:number=1;
-  SelectedRow:number=1;
+  activeCategory:number=-1;
+  SelectedRow:number=-1;
+  Inputtype:string='';
   POSCategoryButtons : POSCategoryButtons[]=[];
   POSClasses : POSClasses[]=[];
   POSItemButtons : POSItemButtons[]=[];
   invoiceItem: FormArray=<FormArray>{};
   POSInvoiceForm: FormGroup = new FormGroup({});
   UserInfo: UserData = <UserData>{};
+  barCodeData: string = '';
 
   customerAddress: Address = <Address>{};
 
@@ -154,22 +156,40 @@ export class PointOfSaleComponent {
     let datePipe: DatePipe = new DatePipe('en-US');
     this.myDate =  datePipe.transform(date , 'yyyy-MM-dd')
   }
-  getItemByCategoryId(Id:number): POSItemButtons[]{
-  return  this.POSItemButtons.filter(item => item.classificationID==Id)
+  getItemByCategoryId(Id:number): POSClasses[]{
+  return  this.POSClasses.filter(item => item.classificationID==Id)
   }
   openCalculator(content:any){
-    this.modalService.open(content , { windowClass: 'calculator' } );
+    this.modalService.open(content , { windowClass: 'calculator' });
   }
-  openNumberEntring(content:any,index:number, input:string){
+  openItemNote(content: any) {
+    if (this.SelectedRow != -1)
+    this.modalService.open(content, { windowClass: 'calculator' });
+  }
+  openNumberEntring(content:any, input:string,index:number=this.SelectedRow){
+    this.SelectedRow =index;
+    this.Inputtype=input;
     this.modalService.open(content , { windowClass: 'calculator' } );
   }
   Resulte(content:any){
-  console.log("Resulte :",content)
+    if(this.Inputtype=='ShowPrice'){
+      this.changePrice(content)
+    }
+    this.invoiceItemList.controls[this.SelectedRow].get(this.Inputtype)?.setValue(content);
   }
   openUsre(content:any){
     this.modalService.open(content , { windowClass: 'Usre' } );
   }
-  AddItem(ButtonData:POSItemButtons){
+  barcodeSearchEvent(){
+    if(this.barCodeData !=''){
+    const ButtonData= this.POSClasses.find(item => item.barCode==this.barCodeData)
+    if(ButtonData){
+      this.barCodeData=''
+      this.AddItem(ButtonData)
+    }
+    }
+  }
+  AddItem(ButtonData:POSClasses){
     const count = this.invoiceItemList.value.length;
     let keepGoing: boolean = true;
 
@@ -222,8 +242,45 @@ export class PointOfSaleComponent {
   }
   onRowSelected(Index:number){
     this.SelectedRow=Index;
-   const rowvalue= this.invoiceItemList.controls[Index].value
-   console.log("row Value :",rowvalue.Qty)
+  }
+  RemoveInvoiceItem(index: number = this.SelectedRow){
+    const add = this.POSInvoiceForm.get('invoiceItem') as FormArray;
+    if (add.length > 1) add.removeAt(index);
+  }
+  changePrice(newPrice:number,index:number = this.SelectedRow){
+    const classID=this.invoiceItemList.controls[index].get('ClassID')?.value;
+    const classUnitID = this.invoiceItemList.controls[index].get('ClassUnitID')?.value;
+    const price = this.invoiceItemList.controls[index].get('ShowPrice')?.value;
+    const ClassUnitInfo = this.POSClasses.find(x=> x.classUnitID==classUnitID && x.classID==classID) as  POSClasses;
+        if( !this.UserInfo.ivcePriceEdit){
+            this.invoiceItemList.controls[index].get('ShowPrice')?.setValue(ClassUnitInfo.classUnitPrice);
+            // this.calcluateFormValue();
+            return;
+        }
+        if(!classID || !classUnitID){
+            this.invoiceItemList.controls[index].get('ShowPrice')?.setValue(ClassUnitInfo.classUnitPrice)
+            // this.calcluateFormValue();
+            return;
+        }
+        if(ClassUnitInfo.aCostX && !this.UserInfo.saleLessCost&& ClassUnitInfo.aCostX<price){
+            this.invoiceItemList.controls[index].get('ShowPrice')?.setValue(ClassUnitInfo.classUnitPrice);
+            // this.calcluateFormValue();
+            return;
+        }
+        if(ClassUnitInfo.classUnitPrice && !this.UserInfo.saleLessThanLastPrice && ClassUnitInfo.classUnitPrice<price){
+            this.invoiceItemList.controls[index].get('ShowPrice')?.setValue(ClassUnitInfo.classUnitPrice);
+            // this.calcluateFormValue();
+            return;
+        }
+        this.invoiceItemList.controls[this.SelectedRow].get('ShowPrice')?.setValue(newPrice);
+        //this.calcluateFormValue();
+  }
+  AddNoteToItem(note:string,index: number = this.SelectedRow){
+    this.invoiceItemList.controls[index].get('ItemNote')?.setValue(note);
+    this.modalService.dismissAll()
+  }
+  closeModal(){
+    this.modalService.dismissAll();
   }
   get addCustomerValid() {
     return this.CustomerForm.controls;
@@ -234,4 +291,5 @@ export class PointOfSaleComponent {
   get f() {
     return this.POSInvoiceForm.controls;
   }
+
 }

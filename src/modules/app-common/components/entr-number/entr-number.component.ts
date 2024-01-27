@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -10,7 +10,7 @@ export class EntrNumberComponent {
   constructor(private modelService :NgbModal){
 
   }
-  currentNumber = '0';
+  currentNumber = '';
   @Output() Resulte = new EventEmitter<Number>();
   getDecimal(){
     if(!this.currentNumber.includes('.')){
@@ -34,5 +34,9 @@ export class EntrNumberComponent {
   }
   close(){
     this.modelService.dismissAll();
+  }
+  onInputChange(event: any): void {
+    // Use a regular expression to allow only numeric characters
+    this.currentNumber = event.target.value.replace(/[^0-9]/g, '');
   }
 }
