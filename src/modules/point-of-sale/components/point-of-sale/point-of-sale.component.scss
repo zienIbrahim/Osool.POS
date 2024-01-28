@@ -113,7 +113,7 @@ td
     }
     td
     {
-        border-bottom: 1px solid #fff !important;
+        border-bottom: 1px solid #fff ;
         padding: 0!important;
     }
 }
@@ -148,13 +148,12 @@ td
     display: flex;
 }
 .SelectedRow{
-    background-color: #093360;
-    color: #fff;
-    td:first-child { border-top-left-radius: 10px; }
-    td:last-child { border-top-right-radius: 10px; }
-   td:first-child { border-bottom-left-radius: 10px; }
-   td:last-child { border-bottom-right-radius: 10px; }
-   
+    td{
+        background-color: #ebebeb;
+        color: #000;
+        border-top: 1px solid #000 !important;
+        border-bottom: 1px solid #000 !important;
+    } 
 }
   
 

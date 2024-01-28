@@ -19,7 +19,10 @@ export class MasterDataService {
       const token = String(localStorage.getItem('app:jwt'));
       return this.jwtHelper.decodeToken(token);
   }
-
+getUserInfo(){
+    let  UserID=this.getDecodedToken().LoginUserID;
+      return this.http.get(this.apiUrl+"Authenticate/GetUserByUserID?UserID="+UserID);
+}
 GetAllPOSClasses(): Observable<any>{
     return this.fetchAndStoreItemsLst('POS/GetAllPOSClasses', LocallyStoredItemsKeys.GetAllPOSClasses);
 }

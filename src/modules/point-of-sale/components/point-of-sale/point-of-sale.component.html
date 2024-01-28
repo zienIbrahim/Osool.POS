@@ -27,7 +27,7 @@
                         </a>
                         <ng-template ngbNavContent >
                             <div class="row  mx-2 container-item">
-                                    <div class="item m-2" id="item"
+                                    <div class="item m-1" id="item"
                                      *ngFor="let item of getItemByCategoryId(category.classificationID)"
                                      (click)="AddItem(item)"
                                      >
@@ -51,94 +51,114 @@
             </div>
         </div>
         <div class="col-lg-4 col-md-12 col-sm-12 ">
-            <div class="card pt-0" style="width: 100%;height: 59vh;overflow: auto;">
-                <div class="row">
-                    <div class="col-12 pt-0">
-                        <div class="input-group">
-                            <input class="form-control py-2 border-right-0 border"  type="search"
-                            [ngModelOptions]="{standalone: true}"
-                            [(ngModel)]="barCodeData"
-                            (keyup.enter)="barcodeSearchEvent()">
-                            <span class="input-group-append">
-                                <div class="input-group-text bg-transparent">
-                                    <fa-icon size="1x" icon="search"></fa-icon>
-
-                                </div>
-                            </span>
+            <form [formGroup]="POSInvoiceForm">
+                <div class="card pt-0" style="width: 100%;height: 50vh;overflow: auto;">
+                    <div class="row">
+                        <div class="col-12 pt-0">
+                            <div class="input-group">
+                                <input class="form-control py-2 border-right-0 border" type="search"
+                                    [ngModelOptions]="{standalone: true}" [(ngModel)]="barCodeData"
+                                    (keyup.enter)="barcodeSearchEvent()">
+                                <span class="input-group-append">
+                                    <div class="input-group-text bg-transparent">
+                                        <fa-icon size="1x" icon="search"></fa-icon>
+                                    </div>
+                                </span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <form [formGroup]="POSInvoiceForm">
-                    <div  class="table-responsive">
+                    <div class="table-responsive">
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th  scope="col">Item</th>
-                                    <th  scope="col">Qty</th>
+                                    <th scope="col">Item</th>
+                                    <th scope="col">Qty</th>
                                     <th scope="col">Price</th>
-                                    <th  scope="col"></th>
+                                    <th scope="col"></th>
                                 </tr>
                             </thead>
                             <tbody formArrayName="invoiceItem">
-                                <tr *ngFor="let item of invoiceItemList.controls  let i = index;"
-                                [formGroupName]="i" (click)="onRowSelected(i)" [ngClass]="{'SelectedRow': SelectedRow==i}">
-                                <td>{{item.get("ClassName")?.value}}</td>
-                                <td class="text-center" (click)="openNumberEntring(entrNumber ,'Qty',i)">
-                                    {{item.get("Qty")?.value}}
-                                </td>
-                                <td (click)="openNumberEntring(entrNumber ,'ShowPrice',i)"> 
-                                    {{item.get("ShowPrice")?.value}}
-                                </td>
-                                <td><fa-icon (click)="RemoveInvoiceItem(i)" style="color: red;" icon="trash" class="icon"></fa-icon></td>
-                            </tr>
+                                <tr *ngFor="let item of invoiceItemList.controls  let i = index;" [formGroupName]="i"
+                                    (click)="onRowSelected(i)" [ngClass]="{'SelectedRow': SelectedRow==i}">
+                                    <td>{{item.get("ClassName")?.value}}</td>
+                                    <td class="text-center" (click)="openNumberEntring(entrNumber ,'Qty',i)">
+                                        {{item.get("Qty")?.value}}
+                                    </td>
+                                    <td (click)="openNumberEntring(entrNumber ,'ShowPrice',i)">
+                                        {{Math.abs(item.get("OrgPrice")?.value).toFixed(2)}}
+                                    </td>
+                                    <td><fa-icon (click)="RemoveInvoiceItem(i)" style="color: red;" icon="trash"
+                                            class="icon"></fa-icon></td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
-                </form>
-                
-            </div>
-            <div class="card" style="width: 100%; height: 27vh;">
-                <div class="d-flex">
-                    <button type="button" class="btn btn-outline-danger" >
-                        Cancel
-                        <fa-icon icon="times"></fa-icon>
-                    </button>
-                    <button type="button" class="btn btn-outline-primary">
-                        Purchase
-                        <fa-icon icon="shopping-bag"></fa-icon>
-                    </button>
-                    <button type="button" class="btn btn-outline-primary">
-                        Purchase
-                        <fa-icon icon="shopping-bag"></fa-icon>
-                    </button>
                 </div>
-                <table>
-                    <tr>
-                        <th class="w-25">Total:</th>
-                        <td class="pr-2 w-100px">
-                            <!-- <h5> <span>$</span> {{Total | number : '1.2-2'}}</h5> -->
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="w-25">Total:</th>
-                        <td class="pr-2 w-100px">
-                            <!-- <h5> <span>$</span> {{Total | number : '1.2-2'}}</h5> -->
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="w-25">Total:</th>
-                        <td class="pr-2 w-100px">
-                            <!-- <h5> <span>$</span> {{Total | number : '1.2-2'}}</h5> -->
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="w-25">Total:</th>
-                        <td class="pr-2 w-100px">
-                            <!-- <h5> <span>$</span> {{Total | number : '1.2-2'}}</h5> -->
-                        </td>
-                    </tr>
-                </table>
-            </div>
+                <div class="card" style="width: 100%; height: 36vh;">
+                    <div class="d-flex">
+                        <button type="button" class="btn btn-outline-danger">
+                            Cancel
+                            <fa-icon icon="times"></fa-icon>
+                        </button>
+                        <button type="button" class="btn btn-outline-primary">
+                            Purchase
+                            <fa-icon icon="shopping-bag"></fa-icon>
+                        </button>
+                        <button type="button" class="btn btn-outline-primary">
+                            Purchase
+                            <fa-icon icon="shopping-bag"></fa-icon>
+                        </button>
+                    </div>
+                    <div class="row d-flex  justify-content-start">
+                        <div class="showdp" *ngIf="BranchData.showDiscountPOS">
+                            <div class="col-sm-12 d-flex" (click)="openNumberEntring(entrNumber ,'InvoiceDiscountPercentage')">
+                                <label class="col-sm-8 p-0 "><small>
+                                    Invoice Discount Percentage
+                                </small></label>
+                                <span class="col-sm-4 p-0" > {{f['InvoiceDiscountPercentage'].value}}</span>
+                            </div>
+                            <div class="col-sm-12 d-flex" (click)="openNumberEntring(entrNumber ,'InvoiceDiscountAmount')">
+                                <label class="col-sm-8  p-0" ><small>
+                                     Invoice Discount Amount 
+                                    </small></label>
+                                    <span class="col-sm-4 p-0" >{{f['InvoiceDiscountAmount'].value}}</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 d-flex">
+                            <div class="form-group row m-0 w-100">
+                                <label class="col-sm-8 text-start  p-0"><small>Invoice total</small></label>
+                                <div class="col-sm-4  text-end p-0">
+                                    <span>{{Math.abs(TotalInvoiceAmount.toFixed(2))}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 d-flex">
+                            <div class="form-group row m-0 w-100">
+                                <label class="col-sm-8  text-start  p-0"><small>Invoice After Discound</small></label>
+                                <div class="col-sm-4 text-end p-0">
+                                   <span> {{Math.abs(TotalInvoiceAfterDiscount.toFixed(2))}}</span>
+                                </div>
+                            </div>   
+                        </div>
+                        <div class="col-sm-12 d-flex">
+                            <div class="form-group row m-0 w-100">
+                                <label class="col-sm-8  text-start  p-0"><small>Vat Amount</small></label>
+                                <div class="col-sm-4 text-end p-0">
+                                  <span>{{Math.abs(TotalVatAmount.toFixed(2))}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 d-flex">
+                            <div class="form-group row m-0 w-100">
+                                <label class="col-sm-8  text-start  p-0"><small>Invoice Amount</small></label>
+                                <div class="col-sm-4 text-end p-0">
+                                    <span>  {{Math.abs(NetTotalInvoiceAmount.toFixed(2))}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -160,11 +180,11 @@
                 </div>
                 <div class="row mt-2">
                     <div class="col-12">
-                        <button class="btn-category btn  btn-outline-primary"
+                        <button class="btn-category btn btn-primary"
                         (click)="AddNoteToItem(note.value)">
                             <fa-icon size="1x" icon="check"></fa-icon>
                         </button>
-                        <button class="btn-category btn  btn-outline-primary"
+                        <button class="btn-category btn btn-outline-primary"
                          type="button" (click) = "closeModal()" > 
                             <fa-icon size="1x" icon="times"></fa-icon>
                          </button>

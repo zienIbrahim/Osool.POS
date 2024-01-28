@@ -95,6 +95,61 @@ export interface Address   {
     showAllCompany: boolean;
     userPrevilige: userPrevilige[];
 }
+export interface Branch {
+    branchID: number;
+    branchName: string;
+    branchNameEng: string;
+    branchAddress: string;
+    branchTel1: string;
+    branchTel2: string;
+    notes: string;
+    negativePay: boolean;
+    tableCount: number;
+    showTablePOS: boolean;
+    tableNameA: string;
+    tableNameE: string;
+    showInOut: boolean;
+    showDiscountPOS: boolean;
+    custDisplay: number;
+    sallerComponant: number;
+    catBtnHeight: number;
+    catBtnWidth: number;
+    showTicketNo: boolean;
+    showLogo: boolean;
+    posFooterNotes: string;
+    showPayCreditInPOS: boolean;
+    custRequre: boolean;
+    itemPrintArEng: boolean;
+    posButton: number;
+    posPrintCount: number;
+    posrPrintCount: number;
+    printAdditionalIfLocal: boolean;
+    posAdditionalPrintPrice: boolean;
+    companyID: number;
+    branchCR:string;
+    PosPrinter:string;
+    countryCode: string;
+    cityName: string;
+    provinceState: string;
+    citySubdivisionName: string;
+    street: string;
+    additionalStreet: string;
+    buildingNumber: string;
+    postalCode: string;
+    additionalNumber: string;
+    scaleSettings: BranchScale;
+}
+
+export interface BranchScale {
+    barcodePrefix: string;
+    barcodeStart: number;
+    barcodeLength: number;
+    weightStart: number;
+    weightLength: number;
+    priceStart: number;
+    priceLength: number;
+    branchID: number;
+}
 export interface userPrevilige {
     numberID: Number;
     formName: string;

@@ -3,8 +3,9 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { MasterDataService } from 'src/modules/app-common/services/mastar-data.service';
-import { Address, POSCategoryButtons, POSClasses, POSItemButtons, UserData } from '../../models';
+import { Address, Branch, POSCategoryButtons, POSClasses, POSItemButtons, UserData } from '../../models';
 import { Setting ,CompanyInfo} from 'src/modules/app-common/models/masterData';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-point-of-sale',
@@ -17,8 +18,8 @@ export class PointOfSaleComponent {
   myDate : any;
   setting : Setting=<Setting>{};
   CompanyInfo: CompanyInfo = <CompanyInfo>{};
-  activeCategory:number=-1;
-  SelectedRow:number=-1;
+  activeCategory:number=1;
+  SelectedRow:number=0;
   Inputtype:string='';
   POSCategoryButtons : POSCategoryButtons[]=[];
   POSClasses : POSClasses[]=[];
@@ -26,22 +27,30 @@ export class PointOfSaleComponent {
   invoiceItem: FormArray=<FormArray>{};
   POSInvoiceForm: FormGroup = new FormGroup({});
   UserInfo: UserData = <UserData>{};
+  BranchData: Branch = <Branch>{};
+
   barCodeData: string = '';
 
+    /* Claclation Declartion */
+  TotalVatAmount: number = 0;
+  TotalInvoiceAmount: number = 0;
+  TotalInvoiceAfterDiscount: number = 0;
+  NetTotalInvoiceAmount: number = 0;
+
   customerAddress: Address = <Address>{};
+  Math: any;
 
   constructor(private modalService: NgbModal,
      private fb: FormBuilder,
      private formBuilder: FormBuilder,
      private _masterDataService: MasterDataService) {
+      this.Math = Math;
+
    }
   ngOnInit(): void {
     this.getMasterdata();
-    //this.showSearch();
     this.initForm();
     this.addInvoiceItem();
-
-    // this.getSumQut();
   }
   initForm() {
     this.POSInvoiceForm = this.formBuilder.group({
@@ -71,6 +80,8 @@ export class PointOfSaleComponent {
       payBank : [''],
       payCredit : [''],
       ChangeCash : [''],
+      InvoiceDiscountAmount: [0],
+      InvoiceDiscountPercentage: [0],
       TaxInvoiceTypeID: ['', Validators.required],
       invoiceItem: this.formBuilder.array([]),
     })
@@ -116,7 +127,9 @@ export class PointOfSaleComponent {
     other: new FormControl(null),
   });
   
-  getMasterdata(){
+  async getMasterdata(){
+    this.UserInfo = await lastValueFrom(this._masterDataService.getUserInfo()) as UserData;
+    this.BranchData = await lastValueFrom(this._masterDataService.GetBranchById(Number(this.UserInfo.defaultBranchID))) as Branch;
     this._masterDataService.GetPOSCategoryButtons().subscribe(
       {
         next:(value)=>{
@@ -163,20 +176,37 @@ export class PointOfSaleComponent {
     this.modalService.open(content , { windowClass: 'calculator' });
   }
   openItemNote(content: any) {
-    if (this.SelectedRow != -1)
+    const classUnitID = this.invoiceItemList.controls[this.SelectedRow].get('ClassUnitID')?.value;
+    if (classUnitID!='')
     this.modalService.open(content, { windowClass: 'calculator' });
   }
   openNumberEntring(content:any, input:string,index:number=this.SelectedRow){
     this.SelectedRow =index;
     this.Inputtype=input;
+    if(this.Inputtype=='ShowPrice' || this.Inputtype=='Qty'){
+      const classUnitID = this.invoiceItemList.controls[this.SelectedRow].get('ClassUnitID')?.value;
+      if(classUnitID=='')
+      return
+    }
     this.modalService.open(content , { windowClass: 'calculator' } );
   }
   Resulte(content:any){
     if(this.Inputtype=='ShowPrice'){
       this.changePrice(content)
     }
+    if(this.Inputtype=='InvoiceDiscountAmount'){
+      this.calcDiscountAmount(content)
+      this.calcluateFormValue();
+      return;
+    }
+    if(this.Inputtype=='InvoiceDiscountPercentage'){
+      this.calcDiscountPercentage(content)
+      this.calcluateFormValue();
+      return;
+    }
     this.invoiceItemList.controls[this.SelectedRow].get(this.Inputtype)?.setValue(content);
-  }
+    this.calcluateFormValue();
+    }
   openUsre(content:any){
     this.modalService.open(content , { windowClass: 'Usre' } );
   }
@@ -200,12 +230,14 @@ export class PointOfSaleComponent {
         this.setItemRowValue(ButtonData.classID,ButtonData.classUnitID,0);
        // this.f['invoiceItem'].updateValueAndValidity();
         keepGoing = false;
+        this.calcluateFormValue()
         return;
       }
       if (Number(RawValue.ClassUnitID) == Number(ButtonData.classUnitID)) {
         this.invoiceItemList.controls[index].get('Qty')?.setValue(RawValue.Qty + 1);
             // this.f['invoiceItem'].updateValueAndValidity();
            keepGoing = false;
+           this.calcluateFormValue()
          return;
       }
       if (index == count - 1) {
@@ -213,11 +245,12 @@ export class PointOfSaleComponent {
         this.setItemRowValue(ButtonData.classID, ButtonData.classUnitID, count);
         this.f['invoiceItem'].updateValueAndValidity();
         keepGoing = false;
+        this.calcluateFormValue()
         return;
        // this.setItemRowValue()
       }
     }
-    })
+    });
   }
   setItemRowValue(ClassID: number, classUnitID: number, index: number) {
     this.invoiceItemList.controls[index].reset();
@@ -254,12 +287,12 @@ export class PointOfSaleComponent {
     const ClassUnitInfo = this.POSClasses.find(x=> x.classUnitID==classUnitID && x.classID==classID) as  POSClasses;
         if( !this.UserInfo.ivcePriceEdit){
             this.invoiceItemList.controls[index].get('ShowPrice')?.setValue(ClassUnitInfo.classUnitPrice);
-            // this.calcluateFormValue();
+            this.calcluateFormValue();
             return;
         }
         if(!classID || !classUnitID){
             this.invoiceItemList.controls[index].get('ShowPrice')?.setValue(ClassUnitInfo.classUnitPrice)
-            // this.calcluateFormValue();
+            this.calcluateFormValue();
             return;
         }
         if(ClassUnitInfo.aCostX && !this.UserInfo.saleLessCost&& ClassUnitInfo.aCostX<price){
@@ -269,11 +302,11 @@ export class PointOfSaleComponent {
         }
         if(ClassUnitInfo.classUnitPrice && !this.UserInfo.saleLessThanLastPrice && ClassUnitInfo.classUnitPrice<price){
             this.invoiceItemList.controls[index].get('ShowPrice')?.setValue(ClassUnitInfo.classUnitPrice);
-            // this.calcluateFormValue();
+            this.calcluateFormValue();
             return;
         }
         this.invoiceItemList.controls[this.SelectedRow].get('ShowPrice')?.setValue(newPrice);
-        //this.calcluateFormValue();
+        this.calcluateFormValue();
   }
   AddNoteToItem(note:string,index: number = this.SelectedRow){
     this.invoiceItemList.controls[index].get('ItemNote')?.setValue(note);
@@ -281,6 +314,81 @@ export class PointOfSaleComponent {
   }
   closeModal(){
     this.modalService.dismissAll();
+  }
+  calcDiscountPercentage(Percentage: number){
+   // Percentage=Number(Percentage.target.value) 
+    if (Percentage > 100) {
+      this.POSInvoiceForm.patchValue({
+        InvoiceDiscountAmount: 0,
+        InvoiceDiscountPercentage: 0,
+    });
+    return;
+    }
+    this.POSInvoiceForm.patchValue({
+      InvoiceDiscountAmount: ((this.TotalInvoiceAmount * Percentage) / 100).toFixed(2),
+      InvoiceDiscountPercentage: Percentage,
+
+  });
+
+  this.TotalInvoiceAfterDiscount = this.TotalInvoiceAmount - this.POSInvoiceForm.get('InvoiceDiscountAmount')?.value;
+  }
+  calcDiscountAmount(amount: number){
+    if (Number(this.TotalInvoiceAmount.toFixed(2)) < amount) {
+      this.POSInvoiceForm.patchValue({
+        InvoiceDiscountAmount: 0,
+        InvoiceDiscountPercentage: 0,
+      });
+      return;
+    }
+    this.POSInvoiceForm.patchValue({
+      InvoiceDiscountPercentage: (100 * (Number(amount) / Number(this.TotalInvoiceAmount.toFixed(2)))).toFixed(7),
+      InvoiceDiscountAmount: amount,
+
+  });
+  this.TotalInvoiceAfterDiscount =
+  this.TotalInvoiceAmount - this.POSInvoiceForm.get('InvoiceDiscountAmount')?.value;
+  }
+  calcluateFormValue(){
+    this.TotalVatAmount = 0;
+    this.TotalInvoiceAmount = 0;
+    this.NetTotalInvoiceAmount = 0;
+    this.TotalInvoiceAfterDiscount = 0;
+    let TotalInvoiceAmount: number = 0;
+    let TotalVatAmount:number =0;
+    let InvoiceDiscountAmount = this.POSInvoiceForm.get('InvoiceDiscountAmount')?.value;
+    this.invoiceItemList.controls.forEach((element: any, index: number) => {
+      const row =  element.getRawValue()
+      let VATAmount: number = 0;
+      let Price: number = 0;
+      let totalPrice: number = 0;
+      if (row.Qty > 0) {
+        if(row.VATCalcTypeID == 1) 
+          Price = Number(row.ShowPrice)
+        if (row.VATCalcTypeID == 2)
+        Price = Number(row.ShowPrice ) / (1+ (row.VATRate /100));
+        VATAmount = Number((((Price  * row.VATRate) / 100)));
+        TotalVatAmount +=  Math.round(((VATAmount*row.Qty ) + Number.EPSILON) * 100) / 100;
+        totalPrice = Math.round((Price * row.Qty + Number.EPSILON) * 100) / 100;
+        TotalInvoiceAmount +=totalPrice;
+      }
+    console.log("Item ->",{
+        VATAmount: VATAmount,
+        Price: Price.toFixed(5),
+        OrgPrice:VATAmount+ totalPrice.toFixed(2),
+    });
+      this.invoiceItemList.controls[index].patchValue({
+        VATAmount: VATAmount,
+        Price: Price.toFixed(5),
+        OrgPrice: Number((VATAmount*row.Qty )+totalPrice).toFixed(2),
+    });
+    });
+    this.TotalInvoiceAmount = Number(TotalInvoiceAmount.toFixed(2));
+    this.TotalInvoiceAfterDiscount = Number((this.TotalInvoiceAmount - InvoiceDiscountAmount).toFixed(2));
+    this.TotalVatAmount = Number(((
+      TotalVatAmount -  (TotalVatAmount *  this.POSInvoiceForm.get('InvoiceDiscountPercentage')?.value)/100
+    )).toFixed(2));
+    this.NetTotalInvoiceAmount = this.TotalInvoiceAfterDiscount + this.TotalVatAmount;
+    this.calcDiscountPercentage(this.POSInvoiceForm.get('InvoiceDiscountPercentage')?.value);
   }
   get addCustomerValid() {
     return this.CustomerForm.controls;
