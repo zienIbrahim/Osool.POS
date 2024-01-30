@@ -3,9 +3,11 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { MasterDataService } from 'src/modules/app-common/services/mastar-data.service';
-import { Address, Branch, POSCategoryButtons, POSClasses, POSItemButtons, UserData } from '../../models';
+import { Address, Branch, POSCategoryButtons, POSClasses, POSClassesResponse, POSItemButtons, UserData } from '../../models';
 import { Setting ,CompanyInfo} from 'src/modules/app-common/models/masterData';
 import { lastValueFrom } from 'rxjs';
+import { GetClassQuantitiesByClassID } from 'src/modules/app-common/models/Payment.form';
+import { LocallyStoredItemsKeys } from 'src/modules/app-common/models/LocallyStoredItemsKeys';
 
 @Component({
   selector: 'app-point-of-sale',
@@ -15,12 +17,15 @@ import { lastValueFrom } from 'rxjs';
 export class PointOfSaleComponent {
   @ViewChild("contentvoucher") contentvoucher:any;
   @ViewChild("searchInput") searchElement: ElementRef =<ElementRef>{};
+  @ViewChild('ErrorPopup') ErrorPopup: any;
   myDate : any;
   setting : Setting=<Setting>{};
   CompanyInfo: CompanyInfo = <CompanyInfo>{};
   activeCategory:number=1;
   SelectedRow:number=0;
   Inputtype:string='';
+  ErrorMsg:string='';
+  entrNumberTitle:string='';
   POSCategoryButtons : POSCategoryButtons[]=[];
   POSClasses : POSClasses[]=[];
   POSItemButtons : POSItemButtons[]=[];
@@ -134,7 +139,6 @@ export class PointOfSaleComponent {
       {
         next:(value)=>{
           this.POSCategoryButtons=value.data;
-          console.log("category ",this.POSCategoryButtons)
         }
   });
   this._masterDataService.GetPOSItemButtons(1).subscribe(
@@ -170,11 +174,15 @@ export class PointOfSaleComponent {
     this.myDate =  datePipe.transform(date , 'yyyy-MM-dd')
   }
   getItemByCategoryId(Id:number): POSClasses[]{
-  return  this.POSClasses.filter(item => item.classificationID==Id)
+  return  this.POSClasses.filter(item => item.classificationID==Id && item.showInPOS)
   }
   openCalculator(content:any){
-    this.modalService.open(content , { windowClass: 'calculator' });
+    this.modalService.open(content , { windowClass: 'calculator' ,size:'xl'});
   }
+  openErrorPopup(){
+    this.modalService.open(this.ErrorPopup , { windowClass: 'calculator' ,size:'sm' ,centered:false,modalDialogClass:'box'});
+  }
+
   openItemNote(content: any) {
     const classUnitID = this.invoiceItemList.controls[this.SelectedRow].get('ClassUnitID')?.value;
     if (classUnitID!='')
@@ -183,6 +191,23 @@ export class PointOfSaleComponent {
   openNumberEntring(content:any, input:string,index:number=this.SelectedRow){
     this.SelectedRow =index;
     this.Inputtype=input;
+    switch (this.Inputtype) {
+      case 'ShowPrice':
+        this.entrNumberTitle='السعر'
+        break;
+      case 'Qty':
+        this.entrNumberTitle='الكمية'
+        break;
+      case 'InvoiceDiscountAmount':
+        this.entrNumberTitle='مبلغ الخصم'
+        break;
+      case 'InvoiceDiscountPercentage':
+        this.entrNumberTitle='نسبة الخصم %'
+        break;
+      default:
+        this.entrNumberTitle='الادخال'
+        break;
+    }
     if(this.Inputtype=='ShowPrice' || this.Inputtype=='Qty'){
       const classUnitID = this.invoiceItemList.controls[this.SelectedRow].get('ClassUnitID')?.value;
       if(classUnitID=='')
@@ -190,9 +215,22 @@ export class PointOfSaleComponent {
     }
     this.modalService.open(content , { windowClass: 'calculator' } );
   }
-  Resulte(content:any){
+  async Resulte(content:any){
     if(this.Inputtype=='ShowPrice'){
       this.changePrice(content)
+    }
+    if(this.Inputtype=='Qty'){
+     let RawValue= this.invoiceItemList.controls[this.SelectedRow].getRawValue();
+     let model:GetClassQuantitiesByClassID={
+      classID:RawValue.ClassID,
+      storID:Number(this.UserInfo.defaultStorID),
+      }
+      let qty= Number((await lastValueFrom(this._masterDataService.GetClassQuantitiesByClassID(model)) as any).currentQty);
+      if(qty < (RawValue.Qty + content) && !this.BranchData.negativePay){
+       this.ErrorMsg="الكمية غير متوفرة"
+       this.openErrorPopup();
+       return ;
+      }
     }
     if(this.Inputtype=='InvoiceDiscountAmount'){
       this.calcDiscountAmount(content)
@@ -217,16 +255,38 @@ export class PointOfSaleComponent {
       this.barCodeData=''
       this.AddItem(ButtonData)
     }
+    else{
+       this._masterDataService.GetPOSClassByBarCode(this.barCodeData).subscribe((item:any)=>{
+       if(item.showInPOS){
+        this.POSClasses=[...this.POSClasses,item];
+        let value: POSClassesResponse = JSON.parse(localStorage.getItem(LocallyStoredItemsKeys.GetAllPOSClasses) || '{}') as POSClassesResponse;
+        value.data=[...value.data,item];
+        localStorage.setItem(LocallyStoredItemsKeys.GetAllPOSClasses ,JSON.stringify(value));
+        this.barCodeData='';
+        this.AddItem(item);
+       }
+       });
+    }
     }
   }
-  AddItem(ButtonData:POSClasses){
+  async AddItem(ButtonData:POSClasses){
     const count = this.invoiceItemList.value.length;
     let keepGoing: boolean = true;
-
-    this.invoiceItemList.controls.forEach((element: any, index: number) => {
+    let model:GetClassQuantitiesByClassID={
+    classID:ButtonData.classID,
+    storID:Number(this.UserInfo.defaultStorID),
+    };
+    let qty= Number((await lastValueFrom(this._masterDataService.GetClassQuantitiesByClassID(model)) as any).currentQty);
+    this.invoiceItemList.controls.forEach(async (element: any, index: number) => {
      const RawValue =  element.getRawValue()
       if (keepGoing) {
       if (count == 1 && Number(RawValue.ClassUnitID) == 0) {
+       if(qty<1 && !this.BranchData.negativePay){
+        this.ErrorMsg="الكمية غير متوفرة"
+        this.openErrorPopup();
+        keepGoing = false;
+        return ;
+       }
         this.setItemRowValue(ButtonData.classID,ButtonData.classUnitID,0);
        // this.f['invoiceItem'].updateValueAndValidity();
         keepGoing = false;
@@ -234,6 +294,13 @@ export class PointOfSaleComponent {
         return;
       }
       if (Number(RawValue.ClassUnitID) == Number(ButtonData.classUnitID)) {
+      
+        if(qty < (RawValue.Qty+1)&& !this.BranchData.negativePay){
+         this.ErrorMsg="الكمية غير متوفرة"
+         this.openErrorPopup();
+         keepGoing = false;
+         return ;
+        }
         this.invoiceItemList.controls[index].get('Qty')?.setValue(RawValue.Qty + 1);
             // this.f['invoiceItem'].updateValueAndValidity();
            keepGoing = false;
@@ -241,6 +308,13 @@ export class PointOfSaleComponent {
          return;
       }
       if (index == count - 1) {
+
+        if(qty < 1 && !this.BranchData.negativePay){
+         this.ErrorMsg="الكمية غير متوفرة"
+         this.openErrorPopup();
+         keepGoing = false;
+         return ;
+        }
         this.addInvoiceItem();
         this.setItemRowValue(ButtonData.classID, ButtonData.classUnitID, count);
         this.f['invoiceItem'].updateValueAndValidity();
@@ -371,11 +445,6 @@ export class PointOfSaleComponent {
         totalPrice = Math.round((Price * row.Qty + Number.EPSILON) * 100) / 100;
         TotalInvoiceAmount +=totalPrice;
       }
-    console.log("Item ->",{
-        VATAmount: VATAmount,
-        Price: Price.toFixed(5),
-        OrgPrice:VATAmount+ totalPrice.toFixed(2),
-    });
       this.invoiceItemList.controls[index].patchValue({
         VATAmount: VATAmount,
         Price: Price.toFixed(5),
@@ -389,6 +458,10 @@ export class PointOfSaleComponent {
     )).toFixed(2));
     this.NetTotalInvoiceAmount = this.TotalInvoiceAfterDiscount + this.TotalVatAmount;
     this.calcDiscountPercentage(this.POSInvoiceForm.get('InvoiceDiscountPercentage')?.value);
+  }
+  handlePaymentFrom(event:any){
+     console.log("handle Payment From event :",event);
+
   }
   get addCustomerValid() {
     return this.CustomerForm.controls;

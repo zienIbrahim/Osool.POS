@@ -64,6 +64,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CalculatorComponent } from './components/calculator/calculator.component';
 import { EntrNumberComponent } from './components/entr-number/entr-number.component';
 import { FormsModule } from '@angular/forms';
+import { PaymentFormComponent } from './components/payment-form/payment-form.component';
 
 @NgModule({
     imports: [
@@ -77,6 +78,7 @@ import { FormsModule } from '@angular/forms';
         ...appCommonDirectives.directives,
         CalculatorComponent,
         EntrNumberComponent,
+        PaymentFormComponent,
     ],
     exports: [
         ...appCommonContainers.containers,

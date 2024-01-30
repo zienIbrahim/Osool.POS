@@ -1,0 +1,206 @@
+<div class="container box" 
+(keyup.enter)="submit()"
+(keyup.f2)="F2()"
+(keyup.f3)="F3()"
+(keyup.f4)="F4()">
+    <div class="row">
+        <div class="col-6 m-0 p-0 border">
+                <input type="text" #calcNumber  (input)="onInputChange($event)"  class="calculator-screen" [(ngModel)]="currentNumber"  />
+                <div class="calculator-keys">
+                    <button type="button" (click) = "getNumber('7')" value="7">7</button>
+                    <button type="button" (click) = "getNumber('8')" value="8">8</button>
+                    <button type="button" (click) = "getNumber('9')" value="9">9</button>
+                    <button type="button" (click) = "RemoveLast()" value="9">   
+                    <fa-icon size="1x" icon="arrow-left"></fa-icon>
+                    </button>
+                
+                
+                    <button type="button" (click) = "getNumber('4')" value="4">4</button>
+                    <button type="button" (click) = "getNumber('5')" value="5">5</button>
+                    <button type="button" (click) = "getNumber('6')" value="6">6</button>
+                    <button type="button" (click) = "clear()" value="مسح">مسح</button>
+                
+                    <button type="button" (click) = "getNumber('1')" value="1">1</button>
+                    <button type="button" (click) = "getNumber('2')" value="2">2</button>
+                    <button type="button" (click) = "getNumber('3')" value="3">3</button>
+                    <button type="button" (click) = "close()" value="X"> 
+                               <fa-icon size="1x" icon="times"></fa-icon>
+                    </button>
+                
+                
+                    <button type="button" (click) = "getDecimal()" class="decimal" value=".">.</button>
+                    <button type="button" (click) = "getNumber('0')" value="0">0</button>
+                    <button type="button" (click) = "getNumber('00')" value="00">00</button>
+                    <button type="button" (click) = "submit()" value="تم">طباعة
+                        <fa-icon size="1x" icon="print"></fa-icon>
+                    </button>
+                </div>
+        </div>
+        <div class="col-6 m-0 p-0 border">
+            <div class="row">
+                <div class="col-6">
+                    <div class="row m-2">
+                        <div class="form-check col-12">
+                            <label class="form-check-label" >
+                            <input class="form-check-input" [value]="1"
+                             type="radio"  [(ngModel)]="PaymentFrom.BuyTypeID"
+                             (ngModelChange)="chooseBuyTypeID($event)">
+                              نقد F2
+                            </label>
+                          </div>
+                          <div class="form-check col-12">
+                            <label class="form-check-label" >
+                            <input class="form-check-input" [value]="2"
+                            (ngModelChange)="chooseBuyTypeID($event)"
+                             type="radio" [(ngModel)]="PaymentFrom.BuyTypeID">
+                              شبكة F3
+                            </label>
+                          </div>
+                          <div class="form-check col-12" *ngIf="ShowPayCreditInPOS">
+                            <label class="form-check-label" >
+                            <input class="form-check-input" [value]="3"
+                            *ngIf="ShowPayCreditInPOS"
+                            (ngModelChange)="chooseBuyTypeID($event)"
+                             type="radio" [(ngModel)]="PaymentFrom.BuyTypeID">
+                              أجل F4
+                            </label>
+                          </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="row">
+                        <span class="form-control form-control-sm my-1 mx-3">{{PaymentFrom.payCash}}</span>
+                        <span class="form-control form-control-sm my-1 mx-3">{{PaymentFrom.payBank}}</span>
+                        <span class="form-control form-control-sm my-1 mx-3" *ngIf="ShowPayCreditInPOS">{{PaymentFrom.payCredit}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <select (change)="GetCustByID($event)" [(ngModel)]="PaymentFrom.CustID" class="form-control form-control-sm">
+                            <option *ngFor="let item of CustomersList" [value]="item.idLevel4">
+                                {{item.nameA}} 
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <input [value]="PaymentFrom.CustName" class="form-control form-control-sm" type="text" placeholder="اسم العميل">
+                </div>
+                <div class="col-12">
+                    <input class="form-control form-control-sm" type="text" [value]="getcustomerAddressAsString"
+                    (click)="openModal(CustomerAddress)">
+                </div>
+                <div class="col-12">
+                    <input class="form-control form-control-sm" type="text" placeholder="الملاحظات">
+                </div>
+                <div class="col-12">
+                    <span  class="form-control form-control-sm">{{PaymentFrom.ChangeCash}}</span>
+                </div>
+                <div class="col-12">
+                    <span class="form-control form-control-sm">{{Amount}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<ng-template #CustomerAddress let-CustomerAddressmodal>
+    <div class="box">
+        <div class="modal-header ">
+
+            <div class="d-flex justify-content-start">
+                <h4 class="modal-title " id="modal-basic-title"> {{ 'SalesInvoice.CustAddress'  }} </h4>
+            </div>
+            <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-light btn-close" aria-label="Close"
+                    (click)="CustomerAddressmodal.dismiss('Cross click')"></button>
+            </div>
+    
+        </div>
+        <div class="modal-body">
+            <div class="row border mt-1">
+                <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                    <label for="CustTaxNumber">{{ 'Address.CustTaxNumber'  }}</label>
+                    <input type="text" class="form-control form-control-sm" [(ngModel)]="PaymentFrom.CustTaxNumber"
+                        placeholder="{{ 'Address.CustTaxNumber'  }}"
+                        [ngClass]="{ 'is-invalid': submitted && PaymentFrom.CustTaxNumber==undefined }" />
+                </div>
+                <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                    <label for="CustomerCR">{{ 'Address.CustomerCR'  }}</label>
+                    <input type="text" class="form-control form-control-sm" [(ngModel)]="PaymentFrom.CustomerCR"
+                        placeholder="{{ 'Address.CustomerCR'  }}"
+                        [ngClass]="{ 'is-invalid': submitted && PaymentFrom.CustomerCR==undefined }" />
+                </div>
+                <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                    <label for="CustMobile">{{ 'SalesInvoice.CustMobile'  }}</label>
+                    <input type="text" class="form-control form-control-sm" [(ngModel)]="PaymentFrom.CustMobile"
+                        placeholder="{{ 'SalesInvoice.CustMobile'  }}"
+                        [ngClass]="{ 'is-invalid': submitted && PaymentFrom.CustMobile==undefined }" />
+                </div>
+            </div>
+            <div class="row  border mt-1">
+                <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                    <label for="countryCode">{{ 'Address.countryCode'  }}</label>
+                    <input type="text" class="form-control form-control-sm" [(ngModel)]="PaymentFrom.customerAddress.countryCode"
+                        placeholder="{{ 'Address.countryCode'  }}"
+                        [ngClass]="{ 'is-invalid': submitted && PaymentFrom.customerAddress.countryCode==undefined }" />
+                </div>
+                <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                    <label for="cityName">{{ 'Address.cityName'  }}</label>
+                    <input type="text" class="form-control form-control-sm" [(ngModel)]="PaymentFrom.customerAddress.cityName"
+                        [ngClass]="{ 'is-invalid': submitted && PaymentFrom.customerAddress.cityName==undefined }"
+                        placeholder="{{ 'Address.cityName'  }}" />
+                </div>
+                <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                    <label for="provinceState">{{ 'Address.provinceState'  }}</label>
+                    <input type="text" class="form-control form-control-sm" [(ngModel)]="PaymentFrom.customerAddress.provinceState"
+                        [ngClass]="{ 'is-invalid': submitted && PaymentFrom.customerAddress.provinceState==undefined }"
+                        placeholder="{{ 'Address.provinceState'  }}" />
+                </div>
+                <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                    <label for="citySubdivisionName">{{ 'Address.citySubdivisionName'  }}</label>
+                    <input type="text" class="form-control form-control-sm" [(ngModel)]="PaymentFrom.customerAddress.citySubdivisionName"
+                        [ngClass]="{ 'is-invalid': submitted && PaymentFrom.customerAddress.citySubdivisionName==undefined }"
+                        placeholder="{{ 'Address.citySubdivisionName'  }}" />
+                </div>
+                <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                    <label for="street">{{ 'Address.street'  }}</label>
+                    <input type="text" class="form-control form-control-sm" [(ngModel)]="PaymentFrom.customerAddress.street"
+                        [ngClass]="{ 'is-invalid': submitted && PaymentFrom.customerAddress.street==undefined }"
+                        placeholder="{{ 'Address.street'  }}" />
+                </div>
+                <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                    <label for="additionalStreet">{{ 'Address.additionalStreet'  }}</label>
+                    <input type="text" class="form-control form-control-sm" [(ngModel)]="PaymentFrom.customerAddress.additionalStreet"
+                        [ngClass]="{ 'is-invalid': submitted && PaymentFrom.customerAddress.additionalStreet==undefined }"
+                        placeholder="{{ 'Address.additionalStreet'  }}" />
+                </div>
+                <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                    <label for="buildingNumber">{{ 'Address.buildingNumber'  }}</label>
+                    <input type="text" class="form-control form-control-sm" [(ngModel)]="PaymentFrom.customerAddress.buildingNumber"
+                        [ngClass]="{ 'is-invalid': submitted && PaymentFrom.customerAddress.buildingNumber==undefined}"
+                        placeholder="{{ 'Address.buildingNumber'  }}" />
+                </div>
+                <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                    <label for="postalCode">{{ 'Address.postalCode'  }}</label>
+                    <input type="text" class="form-control form-control-sm" [(ngModel)]="PaymentFrom.customerAddress.postalCode"
+                        [ngClass]="{ 'is-invalid': submitted && PaymentFrom.customerAddress.postalCode==undefined}"
+                        placeholder="{{ 'Address.postalCode'  }}" />
+                </div>
+                <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                    <label for="additionalNumber">{{ 'Address.additionalNumber'  }}</label>
+                    <input type="text" class="form-control form-control-sm " [(ngModel)]="PaymentFrom.customerAddress.additionalNumber"
+                        [ngClass]="{ 'is-invalid': submitted && PaymentFrom.customerAddress.additionalNumber==undefined}"
+                        placeholder="{{ 'Address.additionalNumber'  }}" />
+                </div>
+                <div class="form-group m-auto col-lg-6 col-md-6 col-sm-12 d-flex justify-content-end">
+                    <button type="button" class="m-2 mb-2 btn btn-primary"
+                        (click)="CustomerAddressmodal.dismiss('Cross click')"> {{ 'Btn.DoneBtn'  }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>

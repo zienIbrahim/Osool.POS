@@ -5,6 +5,7 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { Observable, of, tap } from 'rxjs';
+import { GetClassQuantitiesByClassID } from '../models/Payment.form';
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +24,9 @@ getUserInfo(){
     let  UserID=this.getDecodedToken().LoginUserID;
       return this.http.get(this.apiUrl+"Authenticate/GetUserByUserID?UserID="+UserID);
 }
+GetPOSClassByBarCode(BarCode:string){
+      return this.http.get(this.apiUrl+"POS/GetPOSClassByBarCode?BarCode="+BarCode);
+}
 GetAllPOSClasses(): Observable<any>{
     return this.fetchAndStoreItemsLst('POS/GetAllPOSClasses', LocallyStoredItemsKeys.GetAllPOSClasses);
 }
@@ -32,9 +36,9 @@ GetPOSCategoryButtons(): Observable<any>{
 GetPOSItemButtons(POSItemsOrder:number): Observable<any>{
   return this.fetchAndStoreItemsIDS(POSItemsOrder,'POS/GetPOSItemButtons?POSItemsOrder='+POSItemsOrder, LocallyStoredItemsKeys.GetPOSItemButtons);
 }
-GetPOSClassByBarCode(BarCode:string): Observable<any>{
-  return this.fetchAndStoreItemsIDS(BarCode,'POS/GetPOSClassByBarCode?BarCode='+BarCode, LocallyStoredItemsKeys.GetPOSClassByBarCode);
-}
+// GetPOSClassByBarCode(BarCode:string): Observable<any>{
+//   return this.fetchAndStoreItemsIDS(BarCode,'POS/GetPOSClassByBarCode?BarCode='+BarCode, LocallyStoredItemsKeys.GetPOSClassByBarCode);
+// }
 GetPOSClassByClassUnitID(ClassUnitID:string): Observable<any>{
   return this.fetchAndStoreItemsIDS(ClassUnitID,'POS/GetPOSClassByClassUnitID?ClassUnitID='+ClassUnitID, LocallyStoredItemsKeys.GetPOSClassByClassUnitID);
 }
@@ -83,8 +87,14 @@ GetClassCollectedByClassID(ClassID: any): Observable<any> {
       return this.fetchAndStoreItemsLst('Common/GetAllCustomersLst', LocallyStoredItemsKeys.GetCustomersList);
   }
   GetBranchById(BranchID:number){
-      return this.fetchAndStoreItemsIDS(BranchID,"Branches/GetBranchById?BranchID="+BranchID, LocallyStoredItemsKeys.GetBranchById);
+    return this.fetchAndStoreItemsIDS(BranchID,"Branches/GetBranchById?BranchID="+BranchID, LocallyStoredItemsKeys.GetBranchById);
+}
+GetCustomerOrSupporterByID(IDLevel4:number){
+      return this.fetchAndStoreItemsIDS(IDLevel4,"Common/GetCustomerOrSupporterByID?IDLevel4="+IDLevel4, LocallyStoredItemsKeys.GetCustomerOrSupporterByID);
   }
+  GetClassQuantitiesByClassID(model: GetClassQuantitiesByClassID): Observable<any> {
+    return this.http.post(this.apiUrl +"Common/GetClassQuantitiesByClassID",model)
+}
   private getItem<T>(key: string): T | null {
       let data: any = localStorage.getItem(key);
       if (!data) return null;

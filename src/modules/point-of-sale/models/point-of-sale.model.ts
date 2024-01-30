@@ -26,6 +26,9 @@ export interface POSClasses {
     vatRate: number
     classImage: string
 }
+export interface POSClassesResponse{
+data:POSClasses[]
+}
 export interface POSItemButtons {
     classID: number
     classNO: string

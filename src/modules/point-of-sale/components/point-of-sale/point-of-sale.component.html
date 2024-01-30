@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col-lg-7 col-md-12 col-sm-12 ">
             <div style="display: flex; justify-content: flex-end;">
-                <button (click) = "openCalculator(calculator)" class="btn-category btn  btn-outline-primary">
+                <button class="btn-category btn  btn-outline-primary" (click)="openCalculator(calculator)">
                  <fa-icon size="2x" icon="calculator"></fa-icon>
                 </button>
                 <button class="btn-category btn  btn-outline-primary">
@@ -104,8 +104,8 @@
                             Purchase
                             <fa-icon icon="shopping-bag"></fa-icon>
                         </button>
-                        <button type="button" class="btn btn-outline-primary">
-                            Purchase
+                        <button type="button" class="btn btn-outline-primary" (click)="openCalculator(payment)">
+                            دفع
                             <fa-icon icon="shopping-bag"></fa-icon>
                         </button>
                     </div>
@@ -165,91 +165,119 @@
 <div class="calculator">
     <ng-template #calculator let-calculator modalDialogClass="calculator">
         <app-calculator></app-calculator>
-</ng-template>
+    </ng-template>
+</div>
 <div class="calculator">
     <ng-template #ItemNote let-ItemNote modalDialogClass="calculator">
         <div class="card" (keyup.enter)="AddNoteToItem(note.value)">
             <div class="card-header">
-               <h4>ملاحظات علي الصنف</h4>
+                <h4>ملاحظات علي الصنف</h4>
             </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-12">
-                         <input #note type="text" class="form-control" [value]="invoiceItemList.controls[this.SelectedRow].get('ItemNote')?.value">                    
+                        <input #note type="text" class="form-control"
+                            [value]="invoiceItemList.controls[this.SelectedRow].get('ItemNote')?.value">
                     </div>
                 </div>
                 <div class="row mt-2">
                     <div class="col-12">
-                        <button class="btn-category btn btn-primary"
-                        (click)="AddNoteToItem(note.value)">
+                        <button class="btn-category btn btn-primary" (click)="AddNoteToItem(note.value)">
                             <fa-icon size="1x" icon="check"></fa-icon>
                         </button>
-                        <button class="btn-category btn btn-outline-primary"
-                         type="button" (click) = "closeModal()" > 
+                        <button class="btn-category btn btn-outline-primary" type="button" (click)="closeModal()">
                             <fa-icon size="1x" icon="times"></fa-icon>
-                         </button>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-</ng-template>
+    </ng-template>
+</div>
 <div class="calculator">
     <ng-template #entrNumber let-entrNumber modalDialogClass="calculator">
-        <app-entr-number (Resulte)="Resulte($event)"></app-entr-number>
-</ng-template>
+        <app-entr-number [Title]="entrNumberTitle" (Resulte)="Resulte($event)"></app-entr-number>
+    </ng-template>
 </div>
-<ng-template #contentvoucher  let-d="dismiss" modalDialogClass="customModal">
-    <div class="modal-header">
-        <h4 class="modal-title m-auto" id="modal-basic-title">Sales Details</h4>
-        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    <div class="modal-body">
-        <div class="row">
-            <div class="col-lg-6">
-                <h6> <span> Order No. :</span> </h6>
+<div class="calculator">
+    <ng-template #payment let-payment modalDialogClass="calculator">
+        <app-payment-form (Done)="handlePaymentFrom($event)" [Amount]="NetTotalInvoiceAmount" [ShowPayCreditInPOS]="BranchData.showPayCreditInPOS"></app-payment-form>
+    </ng-template>
+</div>
+<div class="calculator">
+    <ng-template #ErrorPopup let-ErrorPopup modalDialogClass="calculator">
+        <div class="card">
+            <div class="card-header  p-0 d-flex justify-content-start">
+                <h3>خطاء </h3>
             </div>
-            <div class="col-lg-6 d-flex flex-row-reverse">
-                <h6> <span> Date : </span> </h6>
+            <div class="card-body">
+                <span> {{ErrorMsg}}</span>
             </div>
-            <div class="col-lg-6">
-                <h6> <span>Customer : </span> </h6>
+            <div class="card-footer  p-0">
+                <button class="btn-category btn btn-primary" (click)="closeModal()">
+                    <fa-icon size="1x" icon="check"></fa-icon>
+                </button>
+                <button class="btn-category btn btn-outline-primary" type="button" (click)="closeModal()">
+                    <fa-icon size="1x" icon="times"></fa-icon>
+                </button>
             </div>
         </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Item</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>SubTotal</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- <tr *ngFor="let data of voucherSales let i = index;">
+    </ng-template>
+</div>
+<div class="calculator">
+    <ng-template #contentvoucher let-d="dismiss" modalDialogClass="customModal">
+        <div class="modal-header">
+            <h4 class="modal-title m-auto" id="modal-basic-title">Sales Details</h4>
+            <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-lg-6">
+                    <h6> <span> Order No. :</span> </h6>
+                </div>
+                <div class="col-lg-6 d-flex flex-row-reverse">
+                    <h6> <span> Date : </span> </h6>
+                </div>
+                <div class="col-lg-6">
+                    <h6> <span>Customer : </span> </h6>
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>SubTotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- <tr *ngFor="let data of voucherSales let i = index;">
                     <td>{{data.item_lines_order.itemName}}</td>
                     <td>{{data.unitPrice | number : '1.2-2'}}</td>
                     <td>{{data.quantity}}</td>
                     <td>{{data.subTotal | number : '1.2-2'}}</td>
                 </tr> -->
-            </tbody>
-        </table>
-        <table class="table-footer">
-            <tr>
-                <th>Total : </th>
-                <!-- <td>${{invoiceTotle | number : '1.2-2'}}</td> -->
-            </tr>
-            <tr>
-                <th>Employee : </th>
-                <!-- <td>Omer Ali</td> -->
-            </tr>
-        </table>
-        <!-- <div class="d-flex justify-content-end">
+                </tbody>
+            </table>
+            <table class="table-footer">
+                <tr>
+                    <th>Total : </th>
+                    <!-- <td>${{invoiceTotle | number : '1.2-2'}}</td> -->
+                </tr>
+                <tr>
+                    <th>Employee : </th>
+                    <!-- <td>Omer Ali</td> -->
+                </tr>
+            </table>
+            <!-- <div class="d-flex justify-content-end">
             <button type="submit" class="btn btn-primary">Print</button>
         </div> -->
-    </div>
-    <div class="modal-footer d-flex justify-content-center">
-        <h6 > @User</h6>
-    </div>
-</ng-template>
+        </div>
+        <div class="modal-footer d-flex justify-content-center">
+            <h6> @User</h6>
+        </div>
+    </ng-template>
+</div>

@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -12,6 +12,8 @@ export class EntrNumberComponent {
   }
   currentNumber = '';
   @Output() Resulte = new EventEmitter<Number>();
+  @Input() Title!: string;
+
   getDecimal(){
     if(!this.currentNumber.includes('.')){
         this.currentNumber += '.'; 

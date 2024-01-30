@@ -52,4 +52,5 @@ export enum LocallyStoredItemsKeys {
    GetAllCentersCost1='masterdata:CentersCost1',
    GetAllCentersCost2='masterdata:CentersCost2',
    GetAllCentersCost3='masterdata:CentersCost3',
+   GetCustomerOrSupporterByID='masterdata:GetCustomerOrSupporterByID',
 }
